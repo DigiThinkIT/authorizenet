@@ -1,0 +1,33 @@
+<div class="field">
+  <label for="authorizenet_name">Name on Card</label>
+  <input id="authorizenet_name" name="authorizenet_name"/>
+</div>
+<div class="field">
+  <label for="authorizenet_number">Card Number</label>
+  <input id="authorizenet_number" name="authorizenet_number"/>
+</div>
+<div class="field">
+  <label for="authorizenet_exp_month">Exp Month</label>
+  <select id="authorizenet_exp_month" name="authorizenet_exp_month">
+    <option value="01">January</option>
+    <option value="02">February</option>
+    <option value="03">March</option>
+    <option value="04">April</option>
+    <option value="05">May</option>
+    <option value="06">June</option>
+    <option value="07">July</option>
+    <option value="08">August</option>
+    <option value="09">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+  </select>
+</div>
+<div class="field">
+  <label for="authorizenet_exp_year">Exp Year</label>
+  <select id="authorizenet_exp_year" name="authorizenet_exp_year">
+    {% for y in range(year, year + 5) %}
+    <option value="{{y}}">{{y}}</option>
+    {% endfor %}
+  </select>
+</div>

@@ -1,0 +1,5 @@
+{
+  "js/authorizenet_settings.js": [
+    "authorizenet/doctype/authorizenet_settings/authorizenet_settings.js"
+  ]
+}

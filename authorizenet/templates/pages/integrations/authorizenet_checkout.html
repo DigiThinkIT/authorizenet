@@ -1,0 +1,19 @@
+{% extends "templates/web.html" %}
+
+{% block title %} Payment {% endblock %}
+
+{%- block header -%}{% endblock %}
+
+{% block script %}
+<script>{% include "templates/includes/integrations/authorizenet/form.js" %}</script>
+{% endblock %}
+
+{%- block page_content -%}
+	{% include "templates/includes/integrations/authorizenet/checkout_form.html" with context %}
+{% endblock %}
+
+{% block style %}
+<style>
+	{% include "templates/includes/integrations/authorizenet/css/checkout.css" %}
+</style>
+{% endblock %}

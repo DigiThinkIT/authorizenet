@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include authorizenet *.css
+recursive-include authorizenet *.csv
+recursive-include authorizenet *.html
+recursive-include authorizenet *.ico
+recursive-include authorizenet *.js
+recursive-include authorizenet *.json
+recursive-include authorizenet *.md
+recursive-include authorizenet *.png
+recursive-include authorizenet *.py
+recursive-include authorizenet *.svg
+recursive-include authorizenet *.txt
+recursive-exclude authorizenet *.pyc
