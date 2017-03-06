@@ -1,33 +1,34 @@
-frappe.provide("authorizenet");
+frappe.provide("frappe.integration_service")
 
-authorizenet.form = function(charge_info, reference_doctype, reference_docname) {
+frappe.integration_service.authorizenet_gateway = Class.extend({
+  init: function() {
 
-  $(function() {
+  },
 
-    
+  process: function(card_info, billing_info, reference_id, callback) {
 
-  })
-
-}
-
-authorizenet.process = function(charge_info, card_info, billing_info, reference_doctype, reference_docname, callback) {
-
-  frappe.call({
-    method: "templates.pages.integrations.authorizenet_checkout.process",
-    args: {
-      charge_info: charge_info,
-      card_info: card_info,
-      billing_info: billing_info,
-      reference_doctype: reference_doctype,
-      reference_docname: reference_docname
-    },
-    callback: function(result) {
-      if ( result.message.success ) {
-        callback(null, result.message.data);
-      } else {
-        callback(result.message.error, null);
+    frappe.call({
+      method: "authorizenet.templates.pages.integrations.authorizenet_checkout.process",
+      args: {
+        options: {
+          card_info: card_info,
+          billing_info: billing_info,
+        },
+        request_name: reference_id
+      },
+      callback: function(result) {
+        if ( result.message.status == "Completed" ) {
+          callback(null, result.message);
+        } else {
+          callback(result.message, null);
+        }
       }
-    }
-  });
+    });
 
+  }
+
+});
+
+if ( $.mobile ) {
+  alert('mobile');
 }

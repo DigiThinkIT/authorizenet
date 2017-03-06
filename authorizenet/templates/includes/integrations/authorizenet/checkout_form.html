@@ -1,7 +1,47 @@
-<div class='lead text-center centered'>
-	<div class='authorizenet-forms'>
-    {% include "templates/includes/integrations/authorizenet/payment_info.html" with context %}
+<div class="container-fluid authorizenet-form" id="authorizenet-page-form">
+	<div class="row nopadding">
+		<div class="col-md-6 col-md-push-6 nopadding">
+			<h2>Payment Details</h2>
+			<div class="row">
+				<div class="col-xs-12">{{ title }}</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12">{{ description }}</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-8">Reference</div>
+				<div class="col-xs-4">{{ order_id }}</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-8">Total Amount</div>
+				<div class="col-xs-4">{{ amount }}</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12" id="authorizenet-error">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 col-md-pull-6 col-sm-6 nopadding">
+			<div id="authorizenet-payment">
+				{% if stored_payments %}
+				<h2>Stored Payment Options</h2>
+				{% include "templates/includes/integrations/authorizenet/stored_payment.html" with context %}
+				{% endif %}
+				<div id="authorizenet-manual-info">
+					<h2>Billing Information</h2>
+					{% include "templates/includes/integrations/authorizenet/billing_info.html" with context %}
+		    	{% include "templates/includes/integrations/authorizenet/payment_info.html" with context %}
+				</div>
+			</div>
+		</div>
+		<div class='authorizenet-confirming hidden'>
+			Processing...
+	  </div>
   </div>
-	<div class='authorizenet-confirming hidden'>
-  </div>
+	<div class="row nopadding actions">
+		<div class="col-sm-12">
+			<div class="text-center"><button id="authorizenet-process-btn" class="btn btn-primary btn-default">Process Payment</button></div>
+		</div>
+	</div>
+
 </div>

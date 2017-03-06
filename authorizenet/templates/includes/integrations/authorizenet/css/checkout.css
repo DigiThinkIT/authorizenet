@@ -1,3 +1,371 @@
-header, footer {
+.authorizenet-form .nopadding {
+	padding: 0;
+}
+
+.authorizenet-form .nopad-left {
+	padding-left: 0;
+}
+
+.authorizenet-form .nopad-right {
+	padding-right: 0;
+}
+
+/* remove spacing between middle columns */
+.row.no-inner-gutter [class*='col-']:not(:first-child):not(:last-child) {
+  padding-right: 0;
+  padding-left: 0;
+}
+/* remove right padding from first column */
+.row.no-inner-gutter [class*='col-']:first-child {
+	padding-right: 0;
+}
+.row.no-inner-gutter [class*='col-']:last-child {
+  padding-left: 0;
+}
+.row.no-gutter [class*='col-'] {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.authorizenet-form .field {
+	font-size: 16px;
+	position: relative;
+	border: 1px solid #bbb;
+	background: #fff;
+	border-radius: 4px;
+	margin: .1em;
+}
+.authorizenet-form .field:not(.custom) {
+  padding: .6em .2em 0;
+}
+
+.authorizenet-form .field.hidden {
 	display: none;
+}
+
+.authorizenet-form .field.locked {
+	background: #d8d8d8;
+}
+
+.authorizenet-form .field.noborder {
+	border: none;
+	background: transparent;
+}
+
+.authorizenet-form .field.required::after {
+	display: block;
+	position: absolute;
+	content: "*";
+	font-size: 1em;
+	border-radius: 1em;
+	top: .2em;
+	right: .2em;
+	transition: all .5s ease;
+}
+
+.authorizenet-form .field.required.hasvalue::after {
+	opacity: 0;
+	transition: all .5s ease;
+}
+
+.authorizenet-form .field.required.error::after {
+	color: red;
+}
+
+.authorizenet-form .field:not(.custom) label {
+  display: block;
+  position: absolute;
+  top: 25%;
+  font-size: .6em;
+  font-weight: bolder;
+  opacity: 0;
+  transition: all .5s;
+}
+
+.authorizenet-form .field.hasvalue:not(.custom) label,
+.authorizenet-form .field.focus:not(.custom) label {
+  opacity: 1;
+  transition: all .5s;
+  top: .2em;
+}
+
+.authorizenet-form .field.focus:not(.custom) label {
+  color: #286090;
+  font-weight: bolder;
+}
+
+.authorizenet-form .field.error:not(.custom) label {
+	color: red;
+	font-weight: normal;
+}
+
+.authorizenet-form .field.error.focus:not(.custom) label {
+	color: red;
+	font-weight: bolder;
+}
+/* webkit */
+.authorizenet-form .field.focus:not(.custom) input::-webkit-input-placeholder {
+	transition: opacity 0.5s 0s ease;
+  opacity: 0;
+}
+/* FF 19+ */
+.authorizenet-form .field.focus:not(.custom) input::-moz-placeholder {
+	transition: opacity 0.5s 0s ease;
+  opacity: 0;
+}
+/* MS 10+ */
+.authorizenet-form .field.focus:not(.custom) input:-ms-input-placeholder {
+	transition: opacity 0.5s 0s ease;
+  opacity: 0;
+}
+/* FF18- */
+.authorizenet-form .field.focus:not(.custom) input:-moz-placeholder {
+	transition: opacity 0.5s 0s ease;
+  opacity: 0;
+}
+
+.authorizenet-form .field:not(.custom) select,
+.authorizenet-form .field:not(.custom) input {
+	border: none;
+	background: transparent;
+	outline: none;
+	width: 100%;
+	z-index: 1;
+}
+
+/* removes autofill forced background color */
+.authorizenet-form .field:not(.custom) input:-webkit-autofill,
+.authorizenet-form .field:not(.custom) input:-webkit-autofill:hover,
+.authorizenet-form .field:not(.custom) input:-webkit-autofill:focus {
+	-webkit-box-shadow:0 0 0 9999px white inset; /* Change the color to your own background color */
+}
+
+/* Removes safari gloss */
+.authorizenet-form .field:not(.custom) select {
+	-webkit-appearance: none;
+}
+
+/* overrides bootstrap glyph positioning for select down arrow */
+.authorizenet-form .field .select-arrow {
+  position: absolute;
+	right: 1em;
+	top: initial;
+	bottom: .5em;
+	font-size: .8em;
+}
+
+.authorizenet-form .field:not(.custom) input.minimal {
+	width: initial;
+}
+
+.authorizenet-form .field.required.error {
+	border-color: #f00;
+	box-shadow: 0px 0px 5px 1px rgba(255, 0, 0, 0.37);
+}
+
+/** bof - Colorize placeholder on error **/
+/* webkit */
+.authorizenet-form .field.required.error input::-webkit-input-placeholder {
+	color: #f00;
+}
+/* FF 19+ */
+.authorizenet-form .field.required.error input::-moz-placeholder {
+	color: #f00;
+}
+/* MS 10+ */
+.authorizenet-form .field.required.error input:-ms-input-placeholder {
+	color: #f00;
+}
+/* FF18- */
+.authorizenet-form .field.required.error input:-moz-placeholder {
+	color: #f00;
+}
+
+/* webkit */
+.authorizenet-form .field.locked input::-webkit-input-placeholder {
+	color: transparent;
+}
+
+/* FF 19+ */
+.authorizenet-form .field.locked input::-moz-placeholder {
+	color: transparent;
+}
+
+/* MS 10+ */
+.authorizenet-form .field.locked input:-ms-input-placeholder {
+	color: transparent;
+}
+
+/* FF18- */
+.authorizenet-form .field.locked input:-moz-placeholder {
+	color: transparent;
+}
+
+.radioctrl {
+	position: relative;
+	display: block;
+	margin: 0;
+	padding: 4px;
+}
+
+.radioctrl .radio {
+	position: absolute;
+	padding: 0;
+	margin: 0;
+	width: 28px;
+	height: 28px;
+	top: 50%;
+	left: 4px;
+	transform: translateY(-50%);
+	background: #ccc;
+	-webkit-transition: .4s;
+  transition: .4s;
+	border-radius: 30px;
+	cursor: pointer;
+}
+
+.radioctrl .radio:before {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	content: "";
+	width: 20px;
+	height: 20px;
+	background-color: transparent;
+	border-radius: 20px;
+}
+
+.radioctrl .short-text, .radioctrl .long-text {
+	display: block;
+	padding-left: 40px;
+	padding-right: 70px;
+}
+
+.radioctrl .long-text {
+	display: none;
+}
+
+.radioctrl .btn-group {
+	display: none;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+}
+.radioctrl .btn-group .btn {
+	width: 24px;
+	transition: width .5s ease-in-out;
+}
+.radioctrl .btn-group .btn:hover {
+	width: 60px;
+}
+
+.radioctrl .btn-group .btn span {
+  position: absolute;
+	display: block;
+  margin: 0;
+  padding: 0;
+  left: 50%;
+  top: 50%;
+	transform: translateX( -50%) translateY(-50%);
+}
+
+.radioctrl .btn-group .btn {
+	height: 100%;
+	padding: 4px;
+}
+
+.radioctrl .btn-group > .btn:first-child {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.radioctrl input {opacity: 0; float: left;}
+
+.radioctrl input:checked + .radio:before {
+	background-color: #286090;
+}
+
+.radioctrl input:checked + .radio {
+	border: 1px solid #286090;
+}
+
+.radioctrl input:checked + .radio + .short-text {
+	display: none;
+}
+.radioctrl input:checked + .radio + .short-text + .long-text {
+	display: block;
+}
+.radioctrl input:checked + .radio + .short-text + .long-text + .btn-group {
+	display: block;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: absolute;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+	top: 50%;
+	transform: translateY(-50%);
+	right: 2px;
+}
+
+.switch-text {
+	display: inline-block;
+	margin-right: 65px;
+}
+
+.switch-field {
+	padding: 8px;
+	margin: 0;
+}
+/* Hide default HTML checkbox */
+.switch-field input {opacity:0;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+	border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+	border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #286090;
+}
+
+input:focus + .slider:before {
+  box-shadow: 0 0 1px 2px #286090;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+
+.authorizenet-form .actions {
+	margin-top: 2em;
 }
