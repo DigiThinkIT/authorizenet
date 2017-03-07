@@ -10,10 +10,10 @@
   {% for item in stored_payments %}
   <div class="field custom">
     <label class="radioctrl">
-      <input type="radio" name="authorizednet-stored-payment"/>
+      <input type="radio" name="authorizednet-stored-payment" value="{{item.authorizenet_payment_id}}"/>
       <div class="radio"></div>
-      <div class="short-text">{{ item.short_description }}</div>
-      <div class="long-text">{{ item.long_description }}</div>
+      <div class="short-text">{{ item.short_text }}</div>
+      <div class="long-text"><pre>{{ item.long_text }}</pre></div>
       <div class="btn-group">
         <div class="btn btn-danger" title="Remove Permanently?"><span class="glyphicon glyphicon-remove"></span></div>
       </div>

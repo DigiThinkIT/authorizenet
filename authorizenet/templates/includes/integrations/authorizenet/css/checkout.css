@@ -239,7 +239,11 @@
 .radioctrl .short-text, .radioctrl .long-text {
 	display: block;
 	padding-left: 40px;
-	padding-right: 70px;
+	padding-right: 24px;
+}
+
+.radioctrl .long-text pre {
+	margin: 0;
 }
 
 .radioctrl .long-text {

@@ -37,23 +37,16 @@
   </div>
   <div class="row no-gutter">
     <div class="col-sm-12">
-      {% if not restrict_country %}
-      <div class="field required">
-        <label for="authorizenet_bill_country">Country</label>
-        <input id="authorizenet_bill_country" name="authorizenet_bill_country" placeholder="Country"/>
-      </div>
-      {% else %}
       <div class="field required">
         <label for="authorizenet_bill_country">Country</label>
         <select id="authorizenet_bill_country" name="authorizenet_bill_country">
           <option selected>- Select Country -</option>
-          {% for name, label in authorizenet_countries.items() %}
-          <option value="{{name}}">{{label}}</option>
+          {% for country in authorizenet_countries %}
+          <option value="{{country.code}}">{{country.country_name}}</option>
           {% endfor %}
         </select>
         <span class="select-arrow glyphicon glyphicon-triangle-bottom"></span>
       </div>
-      {% endif %}
     </div>
   </div>
 </div>

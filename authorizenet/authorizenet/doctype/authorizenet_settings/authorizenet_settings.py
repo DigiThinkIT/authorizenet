@@ -59,9 +59,9 @@ from urllib import urlencode
 from frappe.integration_broker.doctype.integration_service.integration_service import IntegrationService
 import urllib
 import authorize
-
 from authorize import Transaction
 from authorize import AuthorizeResponseError, AuthorizeInvalidError
+from authorizenet.utils import get_authorizenet_user, get_card_accronym, authnet_address, get_contact
 
 class AuthorizeNetSettings(IntegrationService):
 	service_name = "AuthorizeNet"
@@ -120,8 +120,17 @@ class AuthorizeNetSettings(IntegrationService):
 		return settings
 
 	def process_payment(self):
+		# used for feedback about which payment was used
+		authorizenet_data = {}
+		# the current logged in contact
+		contact = get_contact()
+		# get authorizenet user if available
+		authnet_user = get_authorizenet_user()
+		# the cc data available
 		data = self.process_data
+		# get auth keys
 		settings = self.get_settings()
+		# fetch redirect info
 		redirect_to = data.get("notes", {}).get("redirect_to") or None
 		redirect_message = data.get("notes", {}).get("redirect_message") or None
 
@@ -138,53 +147,109 @@ class AuthorizeNetSettings(IntegrationService):
 
 		try:
 
-			# ensure card fields exist
-			required_card_fields = ['card_number', 'exp_month', 'exp_year', 'card_code']
-			for f in required_card_fields:
-				if not self.card_info.get(f):
-					request.status = "Error"
-					return {
-						request,
-						None,
-						
+			if self.card_info:
+				# ensure card fields exist
+				required_card_fields = ['card_number', 'exp_month', 'exp_year', 'card_code']
+				for f in required_card_fields:
+					if not self.card_info.get(f):
+						request.status = "Error"
+						return {
+							request,
+							None,
+							"Missing field: %s" % f,
+							{}
+						}
 
-					}
-					raise Exception("Missing field: %s" % f)
-
+			# prepare authorize api
 			authorize.Configuration.configure(
 				authorize.Environment.TEST if self.use_sandbox else authorize.Environment.PRODUCTION,
 				settings.api_login_id,
 				settings.api_transaction_key
 			)
 
-			expiration_date = "{0}/{1}".format(
-				self.card_info.get("exp_month"),
-				self.card_info.get("exp_year"))
+			# cache billing fields as per authorize api requirements
+			billing = authnet_address(self.billing_info)
 
+			# build transaction data
 			transaction_data = {
 				"amount": flt(self.process_data.get("amount")),
-				"credit_card": {
-					"card_number": self.card_info.get("card_number"),
-					"expiration_date": expiration_date,
-					"card_code": self.card_info.get("card_code")
-				}
+				"email": contact.get("email_id"),
+				"description": "%s, %s" % (contact.get("last_name"), contact.get("first_name")),
+				"customer_type": "individual"
 			}
+
+			# track ip for tranasction records
+			if frappe.local.request_ip:
+				transaction_data.update({
+					"extra_options": {
+						"customer_ip": frappe.local.request_ip
+					}
+				})
+
+			# get authorizenet profile informatio for stored payments
+			authorizenet_profile = self.process_data.get("authorizenet_profile");
+
+			# use card
+			# see: https://vcatalano.github.io/py-authorize/transaction.html
+			if self.card_info != None:
+				# exp formating for sale/auth api
+				expiration_date = "{0}/{1}".format(
+					self.card_info.get("exp_month"),
+					self.card_info.get("exp_year"))
+
+				transaction_data.update({
+					"credit_card": {
+						"card_number": self.card_info.get("card_number"),
+						"expiration_date": expiration_date,
+						"card_code": self.card_info.get("card_code")
+					}
+				})
+			elif authorizenet_profile:
+
+				# if the customer_id isn't provided, then fetch from authnetuser
+				if not authorizenet_profile.get("customer_id"):
+					authorizenet_profile["customer_id"] = authnet_user.get("authorizenet_id")
+
+				# or stored payment
+				transaction_data.update({
+					"customer_id": authorizenet_profile.get("customer_id"),
+					"payment_id": authorizenet_profile.get("payment_id")
+				})
+
+				# track transaction payment profile ids to return later
+				authorizenet_data.update({
+					"customer_id": authorizenet_profile.get("customer_id"),
+					"payment_id": authorizenet_profile.get("payment_id")
+				})
+
+			# add billing information if available
+			if len(billing.keys()):
+				transaction_data["billing"] = billing
+
+			# include line items if available
+			if self.process_data.get("line_items"):
+				transaction_data["line_items"] = self.process_data.get("line_items")
 
 			request.log_action("Requesting Transaction: %s" % \
 				json.dumps(transaction_data), "Debug")
+
+			# performt transaction finally
 			result = authorize.Transaction.sale(transaction_data)
 			request.log_action(json.dumps(result), "Debug")
 
+			# if all went well, record transaction id
 			request.transaction_id = result.transaction_response.trans_id
 			request.status = "Captured"
 			request.flags.ignore_permissions = 1
 
 		except AuthorizeInvalidError as iex:
+			# log validation errors
 			request.log_action(frappe.get_traceback(), "Error")
 			request.status = "Error"
 			pass
 
 		except AuthorizeResponseError as ex:
+			# log authorizenet server response errors
 			result = ex.full_response
 			request.log_action(json.dumps(result), "Debug")
 			request.log_action(str(ex), "Error")
@@ -192,6 +257,7 @@ class AuthorizeNetSettings(IntegrationService):
 
 			redirect_message = str(ex)
 			if result and hasattr(result, 'transaction_response'):
+				# if there is extra transaction data, log it
 				errors = result.transaction_response.errors
 				request.log_action("\n".join([err.error_text for err in errors]), "Error")
 				request.log_action(traceback.format_exc(), "Error")
@@ -202,11 +268,115 @@ class AuthorizeNetSettings(IntegrationService):
 			pass
 
 		except Exception as ex:
+			# any other errors
 			request.log_action(frappe.get_traceback(), "Error")
 			request.status = "Error"
 			pass
 
-		return request, redirect_to, redirect_message
+
+		# now check if we should store payment information on success
+		if request.status in ("Captured", "Authorized") and \
+			self.card_info and \
+			self.card_info.get("store_payment"):
+
+			try:
+
+				# create customer if authnet_user doesn't exist
+				if not authnet_user:
+					request.log_action("Creating AUTHNET customer", "Info")
+
+					customer_result = authorize.Customer.from_transaction(request.transaction_id)
+
+					request.log_action("Success", "Debug")
+
+					authnet_user = frappe.get_doc({
+						"doctype": "AuthorizeNet Users",
+						"authorizenet_id": customer_result.customer_id,
+						"contact": contact.name
+					})
+
+				card_store_info = {
+					"card_number": self.card_info.get("card_number"),
+					"expiration_month": self.card_info.get("exp_month"),
+					"expiration_year": self.card_info.get("exp_year"),
+					"card_code": self.card_info.get("card_code"),
+					"billing": self.billing_info
+				}
+
+				request.log_action("Storing Payment Information With AUTHNET", "Info")
+				request.log_action(json.dumps(card_store_info), "Debug")
+
+				try:
+					card_result = authorize.CreditCard.create(
+						authnet_user.get("authorizenet_id"), card_store_info)
+				except AuthorizeResponseError as ex:
+					card_result = ex.full_response
+					request.log_action(json.dumps(card_result), "Debug")
+					request.log_action(str(ex), "Error")
+
+					try:
+						# duplicate payment profile
+						if card_result["messages"][0]["message"]["code"] == "E00039":
+							request.log_action("Duplicate payment profile, ignore", "Error")
+						else:
+							raise ex
+					except:
+						raise ex
+
+
+				request.log_action("Success: %s" % card_result.payment_id, "Debug")
+
+				address_short = "{0}, {1} {2}".format(
+					billing.get("city"),
+					billing.get("state"),
+					billing.get("zip"))
+
+				card_label = "{0}{1}".format(
+					get_card_accronym(self.card_info.get("card_number")), self.card_info.get("card_number")[-4:])
+
+				authnet_user.flags.ignore_permissions = 1
+				authnet_user.append("stored_payments", {
+					"doctype": "AuthorizeNet Stored Payment",
+					"short_text": "%s %s" % (card_label,
+					address_short),
+					"long_text": "{0}\n{1}\n{2}, {3} {4}\n{5}".format(
+						card_label,
+						billing.get("address", ""),
+						billing.get("city", ""),
+						billing.get("state", ""),
+						billing.get("zip", ""),
+						frappe.get_value("Country",  filters={"code": self.billing_info.get("country")}, fieldname="country_name")
+					),
+					"address_1": self.billing_info.get("address_1"),
+					"address_2": self.billing_info.get("address_2"),
+					"expires": "{0}-{1}-01".format(
+						self.card_info.get("exp_year"),
+						self.card_info.get("exp_month")),
+					"city": self.billing_info.get("city"),
+					"state": self.billing_info.get("state"),
+					"postal_code": self.billing_info.get("postal_code"),
+					"country": frappe.get_value("Country",  filters={"code": self.billing_info.get("country")}, fieldname="name"),
+					"postal_code": self.billing_info.get("postal_code"),
+					"payment_type": "Card",
+					"authorizenet_payment_id": card_result.payment_id
+				})
+
+				authorizenet_data.update({
+					"customer_id": authnet_user.get("authorizenet_id"),
+					"payment_id": card_result.payment_id
+				})
+
+
+				if not data.get("unittest"):
+					authnet_user.save()
+
+				request.log_action("Stored in DB", "Debug")
+			except Exception as exx:
+				# any other errors
+				request.log_action(frappe.get_traceback(), "Error")
+				raise exx
+
+		return request, redirect_to, redirect_message, authorizenet_data
 
 	def create_request(self, data):
 		self.process_data = frappe._dict(data)
@@ -214,8 +384,9 @@ class AuthorizeNetSettings(IntegrationService):
 		# try:
 		# remove sensitive info from being entered into db
 		self.card_info = self.process_data.get("card_info")
+		self.billing_info = self.process_data.get("billing_info")
 		redirect_url = ""
-		request, redirect_to, redirect_message = self.process_payment()
+		request, redirect_to, redirect_message, authorizenet_data = self.process_payment()
 
 		if self.process_data.get('creation'):
 			del self.process_data['creation']
@@ -225,12 +396,13 @@ class AuthorizeNetSettings(IntegrationService):
 			del self.process_data['log']
 
 		# sanitize card info
-		self.process_data.card_info["card_number"] = "%s%s" % ("X" * \
-		 	(len(self.process_data.card_info["card_number"]) - 4),
-			self.process_data["card_info"]["card_number"][-4])
+		if self.process_data.get("card_info"):
+			self.process_data.card_info["card_number"] = "%s%s" % ("X" * \
+			 	(len(self.process_data.card_info["card_number"]) - 4),
+				self.process_data["card_info"]["card_number"][-4:])
 
-		self.process_data.card_info["card_code"] = "X" * \
-		 	len(self.process_data.card_info["card_code"])
+			self.process_data.card_info["card_code"] = "X" * \
+			 	len(self.process_data.card_info["card_code"])
 
 		if not self.process_data.get("unittest"):
 			self.integration_request = super(AuthorizeNetSettings, self)\
@@ -251,11 +423,12 @@ class AuthorizeNetSettings(IntegrationService):
 
 		custom_redirect_to = None
 		try:
-			custom_redirect_to = frappe.get_doc(
-				self.process_data.reference_doctype,
-				self.process_data.reference_docname).run_method("on_payment_authorized",
-				status)
-			request.log_action("Custom Redirect To: %s" % custom_redirect_to, "Info")
+			if not self.process_data.get("unittest"):
+				custom_redirect_to = frappe.get_doc(
+					self.process_data.reference_doctype,
+					self.process_data.reference_docname).run_method("on_payment_authorized",
+					status)
+				request.log_action("Custom Redirect To: %s" % custom_redirect_to, "Info")
 		except Exception:
 			print(frappe.get_traceback())
 			request.log_action(frappe.get_traceback(), "Error")
@@ -280,14 +453,22 @@ class AuthorizeNetSettings(IntegrationService):
 		if not self.process_data.get("unittest"):
 			request.log_action("Redirect To: %s" % redirect_url, "Info")
 			request.save()
+		else:
+			for log in request.log:
+				print(log.get("level") + "----------------")
+				print(log.get("log"))
+				print("")
 
+		self.process_data = {}
+		self.card_info = {}
+		self.billing_info = {}
 
 		return {
 			"redirect_to": redirect_url,
 			"error": redirect_message if status == "Failed" else None,
-			"status": status
+			"status": status,
+			"authorizenet_data": authorizenet_data
 		}
-		return result
 
 
 		# except Exception:

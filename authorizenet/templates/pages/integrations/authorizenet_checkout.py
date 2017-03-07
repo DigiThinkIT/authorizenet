@@ -8,6 +8,8 @@ from frappe.utils.formatters import format_value
 import json
 from datetime import datetime
 
+from authorizenet.utils import get_authorizenet_user
+
 no_cache = 1
 no_sitemap = 1
 expected_keys = ('amount', 'title', 'description', 'reference_doctype', 'reference_docname',
@@ -23,6 +25,14 @@ def get_context(context):
     except Exception as ex:
         request = None
 
+    # Captured/Authorized transaction redirected to home page
+    # TODO: Should we redirec to a "Payment already received" Page?
+    if request and request.get('status') in ("Captured", "Authorized"):
+        frappe.local.flags.redirect_location = '/'
+        raise frappe.Redirect
+
+    context["authorizenet_countries"] = frappe.get_list("Country", fields=["country_name", "code"])
+    print(context["authorizenet_countries"])
     if request_name and request:
         for key in expected_keys:
             context[key] = request.get(key)
@@ -35,15 +45,12 @@ def get_context(context):
 
         # get the authorizenet user record
         authnet_user = get_authorizenet_user()
+        print(authnet_user)
 
-		if authnet_user:
-        	context["stored_payments"] = authnet_users.get("stored_payments", [])
+        if authnet_user:
+            context["stored_payments"] = authnet_user.get("stored_payments", [])
 
-        # Captured/Authorized transaction redirected to home page
-        # TODO: Should we redirec to a "Payment already received" Page?
-        if request.get('status') in ("Captured", "Authorized"):
-            frappe.local.flags.redirect_location = '/'
-            raise frappe.Redirect
+
     else:
         frappe.redirect_to_message(_('Some information is missing'), _(
             'Looks like someone sent you to an incomplete URL. Please ask them to look into it.'))
