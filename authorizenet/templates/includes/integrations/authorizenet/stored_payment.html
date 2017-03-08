@@ -3,8 +3,8 @@
     <label class="radioctrl">
       <input type="radio" name="authorizednet-stored-payment" value="none" checked />
       <div class="radio"></div>
-      <div class="short-text">Enter Manualy below</div>
-      <div class="long-text">Enter Manualy below</div>
+      <div class="short-text">Enter Manually below</div>
+      <div class="long-text">Enter Manually below</div>
     </label>
   </div>
   {% for item in stored_payments %}
@@ -15,7 +15,7 @@
       <div class="short-text">{{ item.short_text }}</div>
       <div class="long-text"><pre>{{ item.long_text }}</pre></div>
       <div class="btn-group">
-        <div class="btn btn-danger" title="Remove Permanently?"><span class="glyphicon glyphicon-remove"></span></div>
+        <div class="btn btn-danger btn-stored-payment-remove" data-id="{{item.name}}" title="Remove Permanently?"><span class="glyphicon glyphicon-remove"></span></div>
       </div>
     </label>
   </div>

@@ -38,7 +38,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
 
     // check if store payment was selected
     var stored_payment_option = $('input[name="authorizednet-stored-payment"]:checked').val();
-    if ( stored_payment_option != "none" ) {
+    if ( stored_payment_option !== undefined && stored_payment_option != "none" ) {
       return null;
     }
 
@@ -62,11 +62,39 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
   },
 
   form: function(reference_id) {
+
+    // Handle removal of stored payments
+    $('.btn-stored-payment-remove').click(function() {
+      var stored_payment = $(this).attr('data-id');
+      var $input = $(this).closest('.field').find('input[name="authorizednet-stored-payment"]');
+      // sanity check, only allow removing on active selection
+      if ( !$input.is(':checked') ) {
+        return;
+      }
+
+      if ( confirm("Permanently remove stored payment?") ) {
+        $('input[name="authorizednet-stored-payment"][value="none"]').prop('checked', true);
+        $('input[name="authorizednet-stored-payment"][value="none"]').trigger('change');
+        $(this).closest('.field').remove();
+        return frappe.call({
+          method: 'frappe.client.delete',
+          args: {
+            doctype: "AuthorizeNet Stored Payment",
+            name: stored_payment
+          },
+          callback: function() {
+          }
+        });
+      }
+    });
+
+    // handle displaying manual payment information forms
     $('input[name="authorizednet-stored-payment"]').change(function() {
       if ( $(this).val() != 'none' ) {
         $('#authorizenet-manual-info').slideUp('slow');
       } else {
         $('#authorizenet-manual-info').slideDown('slow');
+        $('#authorizenet-manual-info input:first').focus();
       }
     });
 
@@ -100,9 +128,9 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
   },
 
   process: function(card_info, billing_info, stored_payment_options, reference_id, callback) {
-
     frappe.call({
       method: "authorizenet.templates.pages.integrations.authorizenet_checkout.process",
+      freeze: 1,
       args: {
         options: {
           card_info: card_info,
@@ -123,7 +151,3 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
   }
 
 });
-
-if ( $.mobile ) {
-  alert('mobile');
-}

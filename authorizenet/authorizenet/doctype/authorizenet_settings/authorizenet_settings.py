@@ -108,7 +108,7 @@ class AuthorizeNetSettings(IntegrationService):
 
 	def get_payment_url(self, **kwargs):
 		request = self.build_authorizenet_request(**kwargs)
-		url = "./integrations/authorizenet_checkout?req={0}"
+		url = "./integrations/authorizenet_checkout/{0}"
 		return get_url(url.format(request.get("name" )))
 
 	def get_settings(self):
@@ -221,6 +221,8 @@ class AuthorizeNetSettings(IntegrationService):
 					"customer_id": authorizenet_profile.get("customer_id"),
 					"payment_id": authorizenet_profile.get("payment_id")
 				})
+			else:
+				raise "Missing Credit Card Information"
 
 			# add billing information if available
 			if len(billing.keys()):
@@ -260,7 +262,7 @@ class AuthorizeNetSettings(IntegrationService):
 				# if there is extra transaction data, log it
 				errors = result.transaction_response.errors
 				request.log_action("\n".join([err.error_text for err in errors]), "Error")
-				request.log_action(traceback.format_exc(), "Error")
+				request.log_action(frappe.get_traceback(), "Error")
 
 				request.transaction_id = result.transaction_response.trans_id
 				redirect_message = "Success"

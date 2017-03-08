@@ -18,8 +18,14 @@ expected_keys = ('amount', 'title', 'description', 'reference_doctype', 'referen
 def get_context(context):
     context.no_cache = 1
 
-    request_name = frappe.form_dict["req"]
+    # get request name from query string
+    request_name = frappe.form_dict.get("req")
+    # or from pathname, this works better for redirection on auth errors
+    if not request_name:
+        path_parts = context.get("pathname", "").split('/')
+        request_name = path_parts[-1]
 
+    # attempt to fetch AuthorizeNet Request record
     try:
         request = frappe.get_doc("AuthorizeNet Request", request_name)
     except Exception as ex:
@@ -27,12 +33,13 @@ def get_context(context):
 
     # Captured/Authorized transaction redirected to home page
     # TODO: Should we redirec to a "Payment already received" Page?
-    if request and request.get('status') in ("Captured", "Authorized"):
+    if not request or (request and request.get('status') in ("Captured", "Authorized")):
         frappe.local.flags.redirect_location = '/'
         raise frappe.Redirect
 
+    # list countries for billing address form
     context["authorizenet_countries"] = frappe.get_list("Country", fields=["country_name", "code"])
-    print(context["authorizenet_countries"])
+
     if request_name and request:
         for key in expected_keys:
             context[key] = request.get(key)

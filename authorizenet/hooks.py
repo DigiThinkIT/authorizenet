@@ -14,6 +14,11 @@ app_license = "MIT"
 
 integration_services = ["AuthorizeNet"]
 app_include_js = "/assets/js/authorizenet_settings.js"
+
+website_route_rules = [
+	{ "from_route": "/integrations/authorizenet_checkout/<name>", "to_route": "integrations/authorizenet_checkout" }
+]
+
 # Includes in <head>
 # ------------------
 
