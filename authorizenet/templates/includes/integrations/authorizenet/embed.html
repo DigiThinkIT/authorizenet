@@ -1,0 +1,11 @@
+<div id="authorizenet-payment" class="authorizenet-form">
+  {% if stored_payments %}
+  <h2>Stored Payment Options</h2>
+  {% include "templates/includes/integrations/authorizenet/stored_payment.html" with context %}
+  {% endif %}
+  <div id="authorizenet-manual-info">
+    <h2>Billing Information</h2>
+    {% include "templates/includes/integrations/authorizenet/billing_info.html" with context %}
+    {% include "templates/includes/integrations/authorizenet/payment_info.html" with context %}
+  </div>
+</div>

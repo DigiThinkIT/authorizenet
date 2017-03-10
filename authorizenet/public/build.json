@@ -1,5 +1,12 @@
 {
   "js/authorizenet_settings.js": [
     "authorizenet/doctype/authorizenet_settings/authorizenet_settings.js"
+  ],
+  "js/authorizenet_embed.js": [
+    "templates/includes/integrations/authorizenet/process.js",
+    "public/js/authorizenet_embed.js"
+  ],
+  "css/authorizenet_embed.css": [
+    "templates/includes/integrations/authorizenet/css/checkout.css"
   ]
 }
