@@ -11,23 +11,23 @@
 }
 
 /* remove spacing between middle columns */
-.row.no-inner-gutter [class*='col-']:not(:first-child):not(:last-child) {
+.authorizenet-form .row.no-inner-gutter [class*='col-']:not(:first-child):not(:last-child) {
   padding-right: 0;
   padding-left: 0;
 }
 /* remove right padding from first column */
-.row.no-inner-gutter [class*='col-']:first-child {
+.authorizenet-form .row.no-inner-gutter [class*='col-']:first-child {
 	padding-right: 0;
 }
-.row.no-inner-gutter [class*='col-']:last-child {
+.authorizenet-form .row.no-inner-gutter [class*='col-']:last-child {
   padding-left: 0;
 }
-.row.no-gutter [class*='col-'] {
+.authorizenet-form .row.no-gutter [class*='col-'] {
   padding-right: 0;
   padding-left: 0;
 }
 
-.authorizenet-form .field {
+.authorizenet-form .authorizenet-form .field {
 	font-size: 16px;
 	position: relative;
 	border: 1px solid #bbb;
@@ -201,14 +201,14 @@
 	color: transparent;
 }
 
-.radioctrl {
+.authorizenet-form .radioctrl {
 	position: relative;
 	display: block;
 	margin: 0;
 	padding: 4px;
 }
 
-.radioctrl .radio {
+.authorizenet-form .radioctrl .radio {
 	position: absolute;
 	padding: 0;
 	margin: 0;
@@ -224,7 +224,7 @@
 	cursor: pointer;
 }
 
-.radioctrl .radio:before {
+.authorizenet-form .radioctrl .radio:before {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -236,36 +236,36 @@
 	border-radius: 20px;
 }
 
-.radioctrl .short-text, .radioctrl .long-text {
+.authorizenet-form .radioctrl .short-text, .radioctrl .long-text {
 	display: block;
 	padding-left: 40px;
 	padding-right: 24px;
 }
 
-.radioctrl .long-text pre {
+.authorizenet-form .radioctrl .long-text pre {
 	margin: 0;
 }
 
-.radioctrl .long-text {
+.authorizenet-form .radioctrl .long-text {
 	display: none;
 }
 
-.radioctrl .btn-group {
+.authorizenet-form .radioctrl .btn-group {
 	display: none;
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
 	right: 0px;
 }
-.radioctrl .btn-group .btn {
+.authorizenet-form .radioctrl .btn-group .btn {
 	width: 24px;
 	transition: width .5s ease-in-out;
 }
-.radioctrl .btn-group .btn:hover {
+.authorizenet-form .radioctrl .btn-group .btn:hover {
 	width: 60px;
 }
 
-.radioctrl .btn-group .btn span {
+.authorizenet-form .radioctrl .btn-group .btn span {
   position: absolute;
 	display: block;
   margin: 0;
@@ -275,38 +275,38 @@
 	transform: translateX( -50%) translateY(-50%);
 }
 
-.radioctrl .btn-group .btn {
+.authorizenet-form .radioctrl .btn-group .btn {
 	height: 100%;
 	padding: 4px;
 }
 
-.radioctrl .btn-group > .btn:first-child {
+.authorizenet-form .radioctrl .btn-group > .btn:first-child {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
 
-.radioctrl input {opacity: 0; float: left;}
+.authorizenet-form .radioctrl input {opacity: 0; float: left;}
 
-.radioctrl input:checked + .radio:before {
+.authorizenet-form .radioctrl input:checked + .radio:before {
 	background-color: #286090;
 }
 
-.radioctrl input:checked + .radio {
+.authorizenet-form .radioctrl input:checked + .radio {
 	border: 1px solid #286090;
 }
 
-.radioctrl input:checked + .radio + .short-text {
+.authorizenet-form .radioctrl input:checked + .radio + .short-text {
 	display: none;
 }
-.radioctrl input:checked + .radio + .short-text + .long-text {
+.authorizenet-form .radioctrl input:checked + .radio + .short-text + .long-text {
 	display: block;
 }
-.radioctrl input:checked + .radio + .short-text + .long-text + .btn-group {
+.authorizenet-form .radioctrl input:checked + .radio + .short-text + .long-text + .btn-group {
 	display: block;
 }
 
 /* The switch - the box around the slider */
-.switch {
+.authorizenet-form .switch {
   position: absolute;
   display: inline-block;
   width: 60px;
@@ -316,20 +316,20 @@
 	right: 2px;
 }
 
-.switch-text {
+.authorizenet-form .switch-text {
 	display: inline-block;
 	margin-right: 65px;
 }
 
-.switch-field {
+.authorizenet-form .switch-field {
 	padding: 8px;
 	margin: 0;
 }
 /* Hide default HTML checkbox */
-.switch-field input {opacity:0;}
+.authorizenet-form .switch-field input {opacity:0;}
 
 /* The slider */
-.slider {
+.authorizenet-form .slider {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -342,7 +342,7 @@
 	border-radius: 34px;
 }
 
-.slider:before {
+.authorizenet-form .slider:before {
   position: absolute;
   content: "";
   height: 26px;
@@ -355,15 +355,15 @@
 	border-radius: 50%;
 }
 
-input:checked + .slider {
+.authorizenet-form input:checked + .slider {
   background-color: #286090;
 }
 
-input:focus + .slider:before {
+.authorizenet-form input:focus + .slider:before {
   box-shadow: 0 0 1px 2px #286090;
 }
 
-input:checked + .slider:before {
+.authorizenet-form input:checked + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);

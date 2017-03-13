@@ -4,7 +4,7 @@ frappe.provide("frappe.integration_service")
 
 frappe.integration_service.authorizenet_gateway =  frappe.integration_service.authorizenet_gateway.extend({
   form: function(reference_id) {
-    this._super(reference_id);
+    this._super();
     var base = this;
     $(function() {
       // trigger processing info
@@ -15,7 +15,7 @@ frappe.integration_service.authorizenet_gateway =  frappe.integration_service.au
 
         $('#authorizenet-payment').fadeOut('fast');
         $('#authorizenet-process-btn').fadeOut('fast');
-        base.process(card_info, billing_info, stored_payment_options, reference_id,
+        base.process_card(card_info, billing_info, stored_payment_options, reference_id,
           function(err, result) {
             console.dir(result);
             if ( err ) {

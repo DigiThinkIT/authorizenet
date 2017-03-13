@@ -166,7 +166,16 @@ class AuthorizeNetSettings(IntegrationService):
 
         # uses dummy request doc for unittests
         if not data.get("unittest"):
-            request = frappe.get_doc("AuthorizeNet Request", data.get("name"))
+            if data.get("name"):
+                request = frappe.get_doc("AuthorizeNet Request", data.get("name"))
+            else:
+                # create request from scratch when embeding form on the fly
+                request = build_authorizenet_request({ \
+                    key: data[key] for key in \
+                        ('amount', 'currency', 'order_id', 'title', \
+                         'description', 'payer_email', 'payer_name', \
+                         'reference_docname', 'reference_doctype') })
+                data["name"] = request.get("name")
         else:
             request = frappe.get_doc({"doctype": "AuthorizeNet Request"})
 

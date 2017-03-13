@@ -61,7 +61,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     }
   },
 
-  form: function(reference_id) {
+  form: function() {
 
     // Handle removal of stored payments
     $('.btn-stored-payment-remove').click(function() {
@@ -127,17 +127,21 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     });
   },
 
-  process: function(card_info, billing_info, stored_payment_options, reference_id, callback) {
+  process_card: function(card_info, billing_info, stored_payment_options, request_name, callback) {
+    this._process({
+      card_info: card_info,
+      billing_info: billing_info,
+      authorizenet_profile: stored_payment_options
+    }, request_name, callback);
+  },
+
+  _process: function(data, request_name, callback) {
     frappe.call({
       method: "authorizenet.templates.pages.integrations.authorizenet_checkout.process",
       freeze: 1,
       args: {
-        options: {
-          card_info: card_info,
-          billing_info: billing_info,
-          authorizenet_profile: stored_payment_options
-        },
-        request_name: reference_id
+        options: data,
+        request_name: request_name
       },
       callback: function(result) {
         if ( result.message.status == "Completed" ) {
