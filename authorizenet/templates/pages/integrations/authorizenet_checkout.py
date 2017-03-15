@@ -65,22 +65,3 @@ def get_context(context):
         raise frappe.Redirect
 
     return context
-
-@frappe.whitelist(allow_guest=True)
-def process(options, request_name):
-    data = {}
-
-    if isinstance(options, basestring):
-        options = json.loads(options)
-
-    if not options.get("unittest"):
-        request = frappe.get_doc("AuthorizeNet Request", request_name).as_dict()
-    else:
-        request = {}
-
-    data.update(options)
-    data.update(request)
-
-    data = frappe.get_doc("AuthorizeNet Settings").create_request(data)
-    frappe.db.commit()
-    return data

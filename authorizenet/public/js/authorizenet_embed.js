@@ -25,9 +25,9 @@ frappe.gateway_selector.authorizenet_embed =  frappe.integration_service.authori
    * Collects all authnet fields necessary to process payment
    */
   collect: function() {
-    var billing_info = base.collect_billing_info();
-    var card_info = base.collect_card_info();
-    var stored_payment_options = base.collect_stored_payment_info();
+    var billing_info = this.collect_billing_info();
+    var card_info = this.collect_card_info();
+    var stored_payment_options = this.collect_stored_payment_info();
     this.process_data = {
       card_info: card_info,
       billing_info: billing_info,

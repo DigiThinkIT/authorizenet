@@ -137,7 +137,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
 
   _process: function(data, request_name, callback) {
     frappe.call({
-      method: "authorizenet.templates.pages.integrations.authorizenet_checkout.process",
+      method: "authorizenet.authorizenet.doctype.authorizenet_settings.authorizenet_settings.process",
       freeze: 1,
       args: {
         options: data,

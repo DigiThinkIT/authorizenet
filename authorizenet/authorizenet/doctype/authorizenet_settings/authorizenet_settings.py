@@ -169,12 +169,23 @@ class AuthorizeNetSettings(IntegrationService):
             if data.get("name"):
                 request = frappe.get_doc("AuthorizeNet Request", data.get("name"))
             else:
-                # create request from scratch when embeding form on the fly
-                request = build_authorizenet_request({ \
+                # Create request from scratch when embeding form on the fly
+                #
+                # This allows payment processing without having to pre-create
+                # a request first.
+                #
+                # This path expects all the payment request information to be
+                # available!!
+                #
+                # keys expected: ('amount', 'currency', 'order_id', 'title', \
+                #                 'description', 'payer_email', 'payer_name', \
+                #                 'reference_docname', 'reference_doctype')
+                request = self.build_authorizenet_request(**{ \
                     key: data[key] for key in \
                         ('amount', 'currency', 'order_id', 'title', \
                          'description', 'payer_email', 'payer_name', \
                          'reference_docname', 'reference_doctype') })
+
                 data["name"] = request.get("name")
         else:
             request = frappe.get_doc({"doctype": "AuthorizeNet Request"})
@@ -518,6 +529,34 @@ class AuthorizeNetSettings(IntegrationService):
         #         "redirect_to": frappe.redirect_to_message(_("Server Error"), _("There was an internal error processing your payment. Please try again later.")),
         #         "status": 401
         #     }
+
+@frappe.whitelist(allow_guest=True)
+def process(options, request_name=None):
+    data = {}
+
+    # handles string json as well as dict argument
+    if isinstance(options, basestring):
+        options = json.loads(options)
+
+    # fixes bug where js null value is casted as a string
+    if request_name == 'null':
+        request_name = None
+
+    if not options.get("unittest"):
+        if request_name:
+            request = frappe.get_doc("AuthorizeNet Request", request_name).as_dict()
+        else:
+            request = {}
+    else:
+        request = {}
+
+    data.update(options)
+    data.update(request)
+
+    data = frappe.get_doc("AuthorizeNet Settings").create_request(data)
+
+    frappe.db.commit()
+    return data
 
 @frappe.whitelist()
 def get_service_details():
