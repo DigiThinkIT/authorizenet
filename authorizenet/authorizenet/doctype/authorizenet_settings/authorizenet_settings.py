@@ -86,7 +86,7 @@ class AuthorizeNetSettings(IntegrationService):
 
     def get_embed_context(self, context):
         # list countries for billing address form
-        context["authorizenet_countries"] = frappe.get_list("Country", fields=["country_name", "code"])
+        context["authorizenet_countries"] = frappe.get_list("Country", fields=["country_name", "code"], ignore_permissions=1)
         context["year"] = datetime.today().year
 
         # get the authorizenet user record
