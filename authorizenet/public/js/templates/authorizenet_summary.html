@@ -1,0 +1,38 @@
+{% if ( stored_payment_label ) { %}
+  <div class="row">
+    <div class="col-sm-12 authorizenet_summary stored-payment">{{ stored_payment_label }}</div>
+  </div>
+{% } else { %}
+  <div class="row">
+    <div class="col-sm-6 authorizenet-summary name-on-card label">Name on Card</div>
+    <div class="col-sm-6 authorizenet-summary name-on-card value">{%= card_info.name_on_card %}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 authorizenet-summary card-number label">Card Number</div>
+    <div class="col-sm-6 authorizenet-summary card-number value">{%= card_info.card_number %}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 authorizenet-summary card-exp label">Card Expires</div>
+    <div class="col-sm-6 authorizenet-summary card-exp value">{%= card_info.exp_month %}/{%= card_info.exp_year %}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 authorizenet-summary card-number label">Store Payment Information?</div>
+    <div class="col-sm-6 authorizenet-summary card-number value">{% if ( store_payments ) { %} YES {% } else { %} NO {% } %}</div>
+  </div>
+  {% if ( billing_info ) { %}
+  <div class="row">
+    <address class="col-sm-12">
+      {% if ( billing_info.address_1 ) { %}
+        {%= billing_info.address_1 %}<br>
+        {% if ( billing_info.address_2 ) { %}
+          {%= billing_info.address_2 %}<br>
+        {% } %}
+        {%= billing_info.city %}, {%= billing_info.state %} {%= billing_info.postal_code %}<br>
+        {%= billing_info.country %}
+      {% } else { %}
+        Address is incomplete.
+      {% } %}
+    </address>
+  </div>
+  {% } %}
+{% } %}

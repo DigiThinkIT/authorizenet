@@ -22,20 +22,6 @@ frappe.gateway_selector.authorizenet_embed =  frappe.integration_service.authori
   },
 
   /**
-   * Collects all authnet fields necessary to process payment
-   */
-  collect: function() {
-    var billing_info = this.collect_billing_info();
-    var card_info = this.collect_card_info();
-    var stored_payment_options = this.collect_stored_payment_info();
-    this.process_data = {
-      card_info: card_info,
-      billing_info: billing_info,
-      authorizenet_profile: stored_payment_options
-    }
-  },
-
-  /**
    * Process card. Requires a callback function of the form (err, data).
    *
    * When err is not undefined, the payment processing failed. Err should have
@@ -51,6 +37,21 @@ frappe.gateway_selector.authorizenet_embed =  frappe.integration_service.authori
   process: function(overrides, callback) {
     var data = Object.assign({}, this.process_data, overrides);
     this._process(data, null, callback);
+  },
+
+  getSummary: function() {
+    this.collect()
+
+    var stored_payment_label = false;
+    console.log(this.process_data);
+    if ( this.process_data.authorizenet_profile && this.process_data.authorizenet_profile.payment_id ) {
+      stored_payment_label = $('input[name="authorizednet-stored-payment"]:checked').siblings('.long-text').html();
+    }
+
+    return frappe.render(frappe.templates.authorizenet_summary, Object.assign({
+        store_payments: $('#authorizenet_store_payment').is(':checked'),
+        stored_payment_label: stored_payment_label
+      }, this.process_data));
   }
 
 });

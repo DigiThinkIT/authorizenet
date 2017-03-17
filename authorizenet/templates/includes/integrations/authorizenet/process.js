@@ -45,7 +45,11 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     // collect card field values
     for(var field in this.card_fields) {
       var $field = $('#'+field);
-      card_info[this.card_fields[field]] = $field.val();
+      if ( $field.attr('type') == 'checkbox' ) {
+        card_info[this.card_fields[field]] = $field.is('checked');
+      } else {
+        card_info[this.card_fields[field]] = $field.val();
+      }
     }
     return card_info;
   },
@@ -152,6 +156,61 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
       }
     });
 
+  },
+
+  /**
+   * Collects all authnet fields necessary to process payment
+   */
+  collect: function() {
+    var billing_info = this.collect_billing_info();
+    var card_info = this.collect_card_info();
+    var stored_payment_options = this.collect_stored_payment_info();
+    this.process_data = {
+      card_info: card_info,
+      billing_info: billing_info,
+      authorizenet_profile: stored_payment_options
+    }
+  },
+
+  validate: function() {
+    this.collect();
+    //TODO: Validate fields
+    var valid = true;
+    var error = {};
+
+    // stored payment path
+    if ( this.process_data.authorizenet_profile &&
+         this.process_data.authorizenet_profile.payment_id ) {
+      valid = true;
+    } else {
+      // manual entry path
+      if ( !this.process_data.card_info.name_on_card ) {
+        valid = false;
+        error['authorizenet_name'] = "Credit Card Name is required";
+      }
+      if ( !this.process_data.card_info.card_number ) {
+        valid = false;
+        error['authorizenet_number'] = "Credit Card Number is required";
+      }
+      if ( !this.process_data.card_info.card_code ) {
+        valid = false;
+        error['authorizenet_code'] = "Security Code is required";
+      }
+      if ( !this.process_data.card_info.exp_month ) {
+        valid = false;
+        error['authorizenet_exp_month'] = "Exp Month is required";
+      }
+      if ( !this.process_data.card_info.exp_year ) {
+        valid = false;
+        error['authorizenet_exp_year'] = "Exp Year is required";
+      }
+    } // eof-manual entry path
+
+    if ( valid ) {
+      return true;
+    } else {
+      return error;
+    }
   }
 
 });
