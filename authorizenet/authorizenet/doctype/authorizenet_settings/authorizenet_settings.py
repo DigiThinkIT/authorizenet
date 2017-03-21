@@ -164,7 +164,7 @@ class AuthorizeNetSettings(IntegrationService):
         redirect_to = data.get("notes", {}).get("redirect_to") or None
         redirect_message = data.get("notes", {}).get("redirect_message") or None
 
-        # uses dummy request doc for unittests
+        # uses dummy request doc for unittests as we are only testing processing
         if not data.get("unittest"):
             if data.get("name"):
                 request = frappe.get_doc("AuthorizeNet Request", data.get("name"))
@@ -490,17 +490,21 @@ class AuthorizeNetSettings(IntegrationService):
 
         if request.status == "Captured" or request.status == "Authorized":
             redirect_url = "/integrations/payment-success"
-            redirect_message = "Success"
+            redirect_message = "Continue Shopping"
             success = True
         else:
             redirect_url = "/integrations/payment-failed"
             redirect_message = "Declined"
             success = False
 
+        params = []
         if redirect_to:
-            redirect_url += "?" + urllib.urlencode({"redirect_to": redirect_to})
+            params.append(urllib.urlencode({"redirect_to": redirect_to}))
         if redirect_message:
-            redirect_url += "&" + urllib.urlencode({"redirect_message": redirect_message})
+            params.append(urllib.urlencode({"redirect_message": redirect_message}))
+
+        if len(params) > 0:
+            redirect_url += "?" + "&".join(params)
 
         if not self.process_data.get("unittest"):
             request.log_action("Redirect To: %s" % redirect_url, "Info")

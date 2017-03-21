@@ -55,13 +55,15 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
   },
 
   collect_stored_payment_info: function() {
-    var stored_payment_option = $('input[name="authorizednet-stored-payment"]:checked').val();
+    var $input = $('input[name="authorizednet-stored-payment"]:checked');
+    var stored_payment_option = $input.val();
     if ( stored_payment_option == "none" ) {
       return null;
     }
 
     return {
-      "payment_id": stored_payment_option
+      "payment_id": stored_payment_option,
+      "address_name": $input.attr("data-address")
     }
   },
 
@@ -143,6 +145,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     frappe.call({
       method: "authorizenet.authorizenet.doctype.authorizenet_settings.authorizenet_settings.process",
       freeze: 1,
+      freeze_message: "Processing Order. Please Wait...",
       args: {
         options: data,
         request_name: request_name
@@ -153,6 +156,9 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
         } else {
           callback(result.message, null);
         }
+      },
+      error: function(err) {
+        callback(err, null);
       }
     });
 
@@ -177,39 +183,79 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     //TODO: Validate fields
     var valid = true;
     var error = {};
+    var address = {};
 
     // stored payment path
     if ( this.process_data.authorizenet_profile &&
          this.process_data.authorizenet_profile.payment_id ) {
       valid = true;
+      address["billing_address"] = this.process_data.authorizenet_profile.address_name;
     } else {
       // manual entry path
       if ( !this.process_data.card_info.name_on_card ) {
         valid = false;
         error['authorizenet_name'] = "Credit Card Name is required";
       }
+
       if ( !this.process_data.card_info.card_number ) {
         valid = false;
         error['authorizenet_number'] = "Credit Card Number is required";
       }
+
       if ( !this.process_data.card_info.card_code ) {
         valid = false;
         error['authorizenet_code'] = "Security Code is required";
       }
+
       if ( !this.process_data.card_info.exp_month ) {
         valid = false;
         error['authorizenet_exp_month'] = "Exp Month is required";
       }
+
       if ( !this.process_data.card_info.exp_year ) {
         valid = false;
         error['authorizenet_exp_year'] = "Exp Year is required";
       }
+
+      if ( this.process_data.billing_info ) {
+        if ( !this.process_data.billing_info.address_1 ) {
+          valid = false;
+          error['authorizenet_bill_line1'] = "Address line 1 is required";
+        }
+
+        if ( !this.process_data.billing_info.city ) {
+          valid = false;
+          error['authorizenet_bill_city'] = "City is required";
+        }
+
+        if ( !this.process_data.billing_info.state ) {
+          valid = false;
+          error['authorizenet_bill_state'] = "State is required";
+        }
+
+        if ( !this.process_data.billing_info.postal_code ) {
+          valid = false;
+          error['authorizenet_bill_zip'] = "Postal Code is required";
+        }
+
+        if ( !this.process_data.billing_info.country ) {
+          valid = false;
+          error['authorizenet_bill_country'] = "Postal Code is required";
+        }
+
+        // copy address for awc
+        for(var key in this.process_data.billing_info) {
+          address["billing_" + key] = this.process_data.billing_info[key]
+        }
+      } else {
+        valid = false;
+      }
     } // eof-manual entry path
 
-    if ( valid ) {
-      return true;
-    } else {
-      return error;
+    return {
+      valid: valid,
+      errors: error,
+      address: address
     }
   }
 

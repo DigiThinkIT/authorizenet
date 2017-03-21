@@ -10,7 +10,7 @@
   {% for item in stored_payments %}
   <div class="field custom">
     <label class="radioctrl">
-      <input type="radio" name="authorizednet-stored-payment" value="{{item.authorizenet_payment_id}}"/>
+      <input type="radio" name="authorizednet-stored-payment" value="{{item.authorizenet_payment_id}}" data-address="{{item.address_name}}"/>
       <div class="radio"></div>
       <div class="short-text">{{ item.short_text }}</div>
       <div class="long-text"><pre>{{ item.long_text }}</pre></div>
