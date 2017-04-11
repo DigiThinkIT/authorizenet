@@ -33,10 +33,14 @@ def get_authorizenet_user():
     contact = get_contact();
 
     try:
-        authnet_user_name = frappe.get_value("AuthorizeNet Users",
-            filters={"contact": contact.name},
-            fieldname="name")
-        authnet_user = frappe.get_doc("AuthorizeNet Users", authnet_user_name)
+        authnet_user_name = frappe.get_list("AuthorizeNet Users", fields=["name"], filters={"contact": contact.name}, as_list=1)
+        if len(authorize_user_name) > 0:
+            authnet_user_name = authnet_user_name[0][0]
+
+            #authnet_user_name = frappe.get_value("AuthorizeNet Users",
+            #    filters={"contact": contact.name},
+            #    fieldname="name")
+            authnet_user = frappe.get_doc("AuthorizeNet Users", authnet_user_name)
     except:
         authnet_user = None
 
