@@ -35,8 +35,8 @@ class TestProcessing(unittest.TestCase):
                 "address_2": "",
                 "city": "Orlando",
                 "state": "FL",
-                "postal_code": "32801",
-                "country": "US"
+                "pincode": "32801",
+                "country": "United States"
             }
         }
 

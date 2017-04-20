@@ -38,7 +38,7 @@ def get_context(context):
         raise frappe.Redirect
 
     # list countries for billing address form
-    context["authorizenet_countries"] = frappe.get_list("Country", fields=["country_name", "code"])
+    context["authorizenet_countries"] = frappe.get_list("Country", fields=["country_name", "name"])
 
     if request_name and request:
         for key in expected_keys:

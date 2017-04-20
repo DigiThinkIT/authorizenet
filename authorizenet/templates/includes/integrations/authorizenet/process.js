@@ -15,7 +15,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     "authorizenet_bill_line2": "address_2",
     "authorizenet_bill_city": "city",
     "authorizenet_bill_state": "state",
-    "authorizenet_bill_zip": "postal_code",
+    "authorizenet_bill_pincode": "pincode",
     "authorizenet_bill_country": "country"
   },
 
@@ -189,7 +189,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     if ( this.process_data.authorizenet_profile &&
          this.process_data.authorizenet_profile.payment_id ) {
       valid = true;
-      address["billing_address"] = this.process_data.authorizenet_profile.address_name;
+      address["address"] = this.process_data.authorizenet_profile.address_name;
     } else {
       // manual entry path
       if ( !this.process_data.card_info.name_on_card ) {
@@ -233,9 +233,9 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
           error['authorizenet_bill_state'] = "State is required";
         }
 
-        if ( !this.process_data.billing_info.postal_code ) {
+        if ( !this.process_data.billing_info.pincode ) {
           valid = false;
-          error['authorizenet_bill_zip'] = "Postal Code is required";
+          error['authorizenet_bill_pincode'] = "Postal Code is required";
         }
 
         if ( !this.process_data.billing_info.country ) {
@@ -245,7 +245,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
 
         // copy address for awc
         for(var key in this.process_data.billing_info) {
-          address["billing_" + key] = this.process_data.billing_info[key]
+          address[key] = this.process_data.billing_info[key]
         }
       } else {
         valid = false;

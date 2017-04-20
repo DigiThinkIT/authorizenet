@@ -30,8 +30,8 @@
     </div>
     <div class="col-xs-3 nopad-left">
       <div class="field required">
-        <label for="authorizenet_bill_zip">Postal Code</label>
-        <input id="authorizenet_bill_zip" name="authorizenet_bill_zip" placeholder="Postal Code"/>
+        <label for="authorizenet_bill_pincode">Postal Code</label>
+        <input id="authorizenet_bill_pincode" name="authorizenet_bill_pincode" placeholder="Postal Code"/>
       </div>
     </div>
   </div>
@@ -42,7 +42,7 @@
         <select id="authorizenet_bill_country" name="authorizenet_bill_country">
           <option selected>- Select Country -</option>
           {% for country in authorizenet_countries %}
-          <option value="{{country.code}}">{{country.country_name}}</option>
+          <option value="{{country.name}}">{{country.country_name}}</option>
           {% endfor %}
         </select>
         <span class="select-arrow glyphicon glyphicon-triangle-bottom"></span>
