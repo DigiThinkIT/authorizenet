@@ -475,6 +475,8 @@ class AuthorizeNetSettings(IntegrationService):
 		else:
 			status = "Failed"
 
+		request.log_action(status, "Info")
+
 		# prevents unit test from inserting data on db
 		if not self.process_data.get("unittest"):
 			self.integration_request.status = status
