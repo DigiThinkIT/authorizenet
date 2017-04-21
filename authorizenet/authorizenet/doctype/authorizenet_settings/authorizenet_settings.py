@@ -490,7 +490,7 @@ class AuthorizeNetSettings(IntegrationService):
 					status)
 				request.log_action("Custom Redirect To: %s" % custom_redirect_to, "Info")
 		except Exception as ex:
-			log(frappe.get_traceback())
+			print(frappe.get_traceback())
 			request.log_action(frappe.get_traceback(), "Error")
 			raise ex
 
