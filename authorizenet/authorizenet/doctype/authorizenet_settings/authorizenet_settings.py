@@ -104,12 +104,13 @@ class AuthorizeNetSettings(IntegrationService):
 		if authnet_user:
 			context["stored_payments"] = authnet_user.get("stored_payments", [])
 
-	def get_embed_form(self):
+	def get_embed_form(self, context={}):
 
-		context = _dict({
+		context.update({
 			"source": "templates/includes/integrations/authorizenet/embed.html"
 		})
-
+		context = _dict(context)
+		
 		self.get_embed_context(context)
 
 		return {

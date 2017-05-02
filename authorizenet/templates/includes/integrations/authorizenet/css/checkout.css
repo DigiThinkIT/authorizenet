@@ -63,6 +63,10 @@
 	transition: all .5s ease;
 }
 
+.authorizenet-form .field.disabled.required::after {
+	content: "";
+}
+
 .authorizenet-form .field.required.hasvalue::after {
 	opacity: 0;
 	transition: all .5s ease;
@@ -199,6 +203,18 @@
 /* FF18- */
 .authorizenet-form .field.locked input:-moz-placeholder {
 	color: transparent;
+}
+
+.authorizenet-form .field.disabled {
+	background: rgb(214, 214, 214);
+	border: 1px solid #bbb;
+	color: black;
+}
+.authorizenet-form .field.disabled:input,
+.authorizenet-form .field.disabled:select {
+	background: transparent;
+	border: none;
+	color: black;
 }
 
 .authorizenet-form .radioctrl {

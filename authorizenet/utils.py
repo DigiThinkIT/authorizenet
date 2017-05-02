@@ -72,7 +72,7 @@ def authnet_address(fields):
     if fields.get("company"):
         address["company"] = fields.get("company")
     if fields.get("address_1"):
-        address["address"] = "%s%s" % (fields.get("address_1"), fields.get("address_2", ""))
+        address["address"] = "%s %s" % (fields.get("address_1"), fields.get("address_2", ""))
     if fields.get("city"):
         address["city"] = fields.get("city")
     if fields.get("state"):
