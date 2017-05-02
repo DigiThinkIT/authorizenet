@@ -3,7 +3,7 @@
     <div class="col-sm-12">
       <div class="field required">
         <label for="authorizenet_bill_line1">Address</label>
-        <input id="authorizenet_bill_line1" name="authorizenet_bill_line1" placeholder="Address 1"/>
+        <input id="authorizenet_bill_line1" name="authorizenet_bill_line1" placeholder="Address 1" data-type="address_1"/>
       </div>
     </div>
   </div>
@@ -11,7 +11,7 @@
     <div class="col-sm-12">
       <div class="field">
         <label for="authorizenet_bill_line2">Address 2</label>
-        <input id="authorizenet_bill_line2" name="authorizenet_bill_line1" placeholder="Address 2"/>
+        <input id="authorizenet_bill_line2" name="authorizenet_bill_line2" placeholder="Address 2" data-type="address_2"/>
       </div>
     </div>
   </div>
@@ -19,19 +19,19 @@
     <div class="col-xs-6 nopad-right">
       <div class="field required">
         <label for="authorizenet_bill_city">City</label>
-        <input id="authorizenet_bill_city" name="authorizenet_bill_city" placeholder="City"/>
+        <input id="authorizenet_bill_city" name="authorizenet_bill_city" placeholder="City" data-type="city"/>
       </div>
     </div>
     <div class="col-xs-3 nopad-right">
       <div class="field">
         <label for="authorizenet_bill_state">State</label>
-        <input id="authorizenet_bill_state" name="authorizenet_bill_state" placeholder="State"/>
+        <input id="authorizenet_bill_state" name="authorizenet_bill_state" placeholder="State" data-type="state"/>
       </div>
     </div>
     <div class="col-xs-3 nopad-left">
       <div class="field required">
         <label for="authorizenet_bill_pincode">Postal Code</label>
-        <input id="authorizenet_bill_pincode" name="authorizenet_bill_pincode" placeholder="Postal Code"/>
+        <input id="authorizenet_bill_pincode" name="authorizenet_bill_pincode" placeholder="Postal Code" data-type="pincode"/>
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@
     <div class="col-sm-12">
       <div class="field required">
         <label for="authorizenet_bill_country">Country</label>
-        <select id="authorizenet_bill_country" name="authorizenet_bill_country">
+        <select id="authorizenet_bill_country" name="authorizenet_bill_country" data-type="country">
           <option selected>- Select Country -</option>
           {% for country in authorizenet_countries %}
           <option value="{{country.name}}">{{country.country_name}}</option>

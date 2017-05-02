@@ -104,6 +104,37 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
       }
     });
 
+		// initially copy all field values on checkbox change
+		$('#authorizenet_address_same_as').change(function() {
+			var addr_src = $(this).attr('data-source');
+			if ( $(this).is(':checked') ) {
+				$(addr_src).find('[data-type]').each(function() {
+					var name = $(this).attr('data-type');
+					var value = $(this).val();
+					$('.authorizenet-form .field [data-type="'+name+'"]').val(value);
+					$('.authorizenet-form .field [data-type="'+name+'"]').prop('disabled', true);
+					$('.authorizenet-form .field [data-type="'+name+'"]').closest('.field').addClass('disabled');
+				});
+			} else {
+				$('.authorizenet-form .field [data-type]').each(function() {
+					$(this).prop('disabled', false);
+					$(this).closest('.field').removeClass('disabled');
+				});
+			}
+		})
+
+		// then track all changes on source fields
+		if ( $('#authorizenet_address_same_as').length > 0 ) {
+			var addr_src = $('#authorizenet_address_same_as').attr('data-source');
+			$(addr_src).on('field-change', function(e, field) {
+				if ( $('#authorizenet_address_same_as').is(':checked') ) {
+					$('.authorizenet-form .field [data-type="'+field.name+'"]').val(field.value);
+					$('.authorizenet-form .field [data-type="'+field.name+'"]').prop('disabled', true);
+					$('.authorizenet-form .field [data-type="'+field.name+'"]').closest('.field').addClass('disabled');
+				}
+			});
+		}
+
     // handle smart placeholder labels
     $('.authorizenet-form .field').each(function() {
       var $field = $(this);
