@@ -228,11 +228,6 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
           error['authorizenet_bill_city'] = "City is required";
         }
 
-        if ( !this.process_data.billing_info.state ) {
-          valid = false;
-          error['authorizenet_bill_state'] = "State is required";
-        }
-
         if ( !this.process_data.billing_info.pincode ) {
           valid = false;
           error['authorizenet_bill_pincode'] = "Postal Code is required";

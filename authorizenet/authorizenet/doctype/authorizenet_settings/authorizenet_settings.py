@@ -484,17 +484,18 @@ class AuthorizeNetSettings(IntegrationService):
 			request.save()
 
 		custom_redirect_to = None
-		try:
-			if not self.process_data.get("unittest"):
-				custom_redirect_to = frappe.get_doc(
-					self.process_data.reference_doctype,
-					self.process_data.reference_docname).run_method("on_payment_authorized",
-					status)
-				request.log_action("Custom Redirect To: %s" % custom_redirect_to, "Info")
-		except Exception as ex:
-			print(frappe.get_traceback())
-			request.log_action(frappe.get_traceback(), "Error")
-			raise ex
+		if status != "Failed":
+			try:
+				if not self.process_data.get("unittest"):
+					custom_redirect_to = frappe.get_doc(
+						self.process_data.reference_doctype,
+						self.process_data.reference_docname).run_method("on_payment_authorized",
+						status)
+					request.log_action("Custom Redirect To: %s" % custom_redirect_to, "Info")
+			except Exception as ex:
+				print(frappe.get_traceback())
+				request.log_action(frappe.get_traceback(), "Error")
+				raise ex
 
 		if custom_redirect_to:
 			redirect_to = custom_redirect_to
