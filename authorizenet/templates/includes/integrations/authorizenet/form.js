@@ -17,7 +17,6 @@ frappe.integration_service.authorizenet_gateway =  frappe.integration_service.au
         $('#authorizenet-process-btn').fadeOut('fast');
         base.process_card(card_info, billing_info, stored_payment_options, reference_id,
           function(err, result) {
-            console.dir(result);
             if ( err ) {
               $('#authorizenet-error').text(err.error)
               $('#authorizenet-payment').fadeIn('fast');

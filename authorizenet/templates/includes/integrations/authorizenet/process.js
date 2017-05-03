@@ -50,7 +50,14 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
       } else {
         card_info[this.card_fields[field]] = $field.val();
       }
+
+			// clean up string
+			if ( card_info[this.card_fields[field]] !== undefined && typeof card_info[this.card_fields[field]] == "string" ) {
+				// no empty data allowed
+				card_info[this.card_fields[field]] = card_info[this.card_fields[field]].trim();
+			}
     }
+
     return card_info;
   },
 

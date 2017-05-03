@@ -5,20 +5,20 @@
 {% } else { %}
   <div class="row">
     <div class="col-sm-6 authorizenet-summary name-on-card label">Name on Card</div>
-    <div class="col-sm-6 authorizenet-summary name-on-card value {% if ( !card_info.name_on_cart ) %}error{% } %}">
-			{% if ( !card_info.name_on_cart ) %}Missing{% } else { %}{%= card_info.name_on_card %}{% } %}
+    <div class="col-sm-6 authorizenet-summary name-on-card value {%= card_info.name_on_card?"":"error" %}">
+			{%= card_info.name_on_card?card_info.name_on_card:"Missing" %}
 		</div>
   </div>
   <div class="row">
     <div class="col-sm-6 authorizenet-summary card-number label">Card Number</div>
     <div class="col-sm-6 authorizenet-summary card-number value {% if ( !card_info.card_number ) %}error{% } %}">
-			{% if ( !card_info.card_number ) %}Missing{% } else { %}{%= card_info.card_number %}{% } %}
+			{% if ( !card_info.card_number ) { %}Missing{% } else { %}{%= card_info.card_number %}{% } %}
 		</div>
   </div>
 	<div class="row">
     <div class="col-sm-6 authorizenet-summary card-code label">Card Code</div>
     <div class="col-sm-6 authorizenet-summary card-code value {% if ( !card_info.card_code ) %}error{% } %}">
-			{% if ( !card_info.card_code ) %}Missing{% } else { %}{%= card_info.card_code %}{% } %}
+			{% if ( !card_info.card_code ) { %}Missing{% } else { %}{%= card_info.card_code %}{% } %}
 		</div>
   </div>
   <div class="row">

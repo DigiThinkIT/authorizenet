@@ -43,7 +43,6 @@ frappe.gateway_selector.authorizenet_embed =  frappe.integration_service.authori
     this.collect()
 
     var stored_payment_label = false;
-    console.log(this.process_data);
     if ( this.process_data.authorizenet_profile && this.process_data.authorizenet_profile.payment_id ) {
       stored_payment_label = $('input[name="authorizednet-stored-payment"]:checked').siblings('.long-text').html();
     }
