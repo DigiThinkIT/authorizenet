@@ -147,6 +147,11 @@
 /* Removes safari gloss */
 .authorizenet-form .field:not(.custom) select {
 	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+.authorizenet-form .field:not(.custom) select::--ms-expand {
+	display: none;
 }
 
 /* overrides bootstrap glyph positioning for select down arrow */
