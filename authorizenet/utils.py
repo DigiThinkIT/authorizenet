@@ -77,8 +77,8 @@ def authnet_address(fields):
         address["city"] = fields.get("city")
     if fields.get("state"):
         address["state"] = fields.get("state")
-    if fields.get("postal_code"):
-        address["zip"] = fields.get("postal_code")
+    if fields.get("pincode"):
+        address["zip"] = fields.get("pincode")
     if fields.get("country"):
         address["country"] = fields.get("country")
     if fields.get("phone_number"):
