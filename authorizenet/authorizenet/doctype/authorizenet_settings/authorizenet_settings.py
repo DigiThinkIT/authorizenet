@@ -110,7 +110,7 @@ class AuthorizeNetSettings(IntegrationService):
 			"source": "templates/includes/integrations/authorizenet/embed.html"
 		})
 		context = _dict(context)
-		
+
 		self.get_embed_context(context)
 
 		return {
@@ -209,7 +209,7 @@ class AuthorizeNetSettings(IntegrationService):
 
 			if self.card_info:
 				# ensure card fields exist
-				required_card_fields = ['card_number', 'exp_month', 'exp_year', 'card_code']
+				required_card_fields = ['name_on_card', 'card_number', 'exp_month', 'exp_year', 'card_code']
 				for f in required_card_fields:
 					if not self.card_info.get(f):
 						request.status = "Error"
@@ -229,6 +229,10 @@ class AuthorizeNetSettings(IntegrationService):
 
 			# cache billing fields as per authorize api requirements
 			billing = authnet_address(self.billing_info)
+			if self.shipping_info:
+				shipping = authnet_address(self.shipping_info)
+			else:
+				shipping = None
 
 			# build transaction data
 			transaction_data = {
@@ -284,9 +288,20 @@ class AuthorizeNetSettings(IntegrationService):
 			else:
 				raise "Missing Credit Card Information"
 
+			name_parts = self.card_info["name_on_card"].split(' ')
+			first_name = name_parts[0]
+			last_name = " ".join(name_parts[1:])
+
 			# add billing information if available
 			if len(billing.keys()):
 				transaction_data["billing"] = billing
+				transaction_data["billing"]["first_name"] = first_name
+				transaction_data["billing"]["last_name"] = last_name
+
+			if shipping and len(shipping.keys()):
+				transaction_data["shipping"] = billing
+				transaction_data["shipping"]["first_name"] = first_name
+				transaction_data["shipping"]["last_name"] = last_name
 
 			# include line items if available
 			if self.process_data.get("line_items"):
@@ -295,6 +310,8 @@ class AuthorizeNetSettings(IntegrationService):
 			request.log_action("Requesting Transaction: %s" % \
 				json.dumps(transaction_data), "Debug")
 
+
+			log(pretty_json(transaction_data))
 			# performt transaction finally
 			result = authorize.Transaction.sale(transaction_data)
 			request.log_action(json.dumps(result), "Debug")
@@ -446,6 +463,7 @@ class AuthorizeNetSettings(IntegrationService):
 		# remove sensitive info from being entered into db
 		self.card_info = self.process_data.get("card_info")
 		self.billing_info = self.process_data.get("billing_info")
+		self.shipping_info = self.process_data.get("shipping_info")
 		redirect_url = ""
 		request, redirect_to, redirect_message, authorizenet_data = self.process_payment()
 
@@ -531,6 +549,7 @@ class AuthorizeNetSettings(IntegrationService):
 		self.process_data = {}
 		self.card_info = {}
 		self.billing_info = {}
+		self.shipping_info = {}
 
 		return {
 			"redirect_to": redirect_url,
