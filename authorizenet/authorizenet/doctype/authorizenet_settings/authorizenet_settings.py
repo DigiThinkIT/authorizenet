@@ -236,6 +236,9 @@ class AuthorizeNetSettings(IntegrationService):
 
 			# build transaction data
 			transaction_data = {
+				"order": {
+					"invoice_number": data["order_id"]
+				},
 				"amount": flt(self.process_data.get("amount")),
 				"email": contact.get("email_id"),
 				"description": "%s, %s" % (contact.get("last_name"), contact.get("first_name")),
