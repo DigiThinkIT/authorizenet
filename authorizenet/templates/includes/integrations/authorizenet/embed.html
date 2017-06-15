@@ -5,10 +5,12 @@
   {% endif %}
   <div id="authorizenet-manual-info">
     <h2>Billing Information</h2>
+		<!--
 		{% if use_address_same_as -%}
 		{% include "templates/includes/integrations/authorizenet/address_same_as.html" with context %}
 		{%- endif %}
     {% include "templates/includes/integrations/authorizenet/billing_info.html" with context %}
+	  -->
     {% include "templates/includes/integrations/authorizenet/payment_info.html" with context %}
   </div>
 </div>

@@ -10,26 +10,17 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
     "authorizenet_store_payment": "store_payment"
   },
 
-  billing_fields: {
-    "authorizenet_bill_line1": "address_1",
-    "authorizenet_bill_line2": "address_2",
-    "authorizenet_bill_city": "city",
-    "authorizenet_bill_state": "state",
-    "authorizenet_bill_pincode": "pincode",
-    "authorizenet_bill_country": "country"
-  },
-
-  init: function() {
-
+  init: function(addressForm) {
+		this.addressForm = addressForm;
   },
 
   collect_billing_info: function() {
     var billing_info = {};
     // collect billing field values
-    for(var field in this.billing_fields) {
-      var $field = $('#'+field);
-      billing_info[this.billing_fields[field]] = $field.val();
-    }
+
+		var result = this.addressForm.validate();
+		billing_info = $.extend({}, result.address);
+
     return billing_info;
   },
 
