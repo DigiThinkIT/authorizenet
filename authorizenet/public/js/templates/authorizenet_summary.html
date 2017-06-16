@@ -32,8 +32,8 @@
   {% if ( billing_info ) { %}
   <div class="row">
     <address class="col-sm-12">
-			{%= billing_info.title %}
       {% if ( billing_info.address_1 ) { %}
+				{%= billing_info.title %}<br>
         {%= billing_info.address_1 %}<br>
         {% if ( billing_info.address_2 ) { %}
           {%= billing_info.address_2 %}<br>
