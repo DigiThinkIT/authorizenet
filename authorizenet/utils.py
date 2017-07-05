@@ -30,9 +30,9 @@ def get_contact(contact_name = None):
     return frappe.get_doc("Contact", contact_name)
 
 def get_authorizenet_user():
-    contact = get_contact();
 
     try:
+    	contact = get_contact();
         authnet_user_name = frappe.get_list("AuthorizeNet Users", fields=["name"], filters={"contact": contact.name}, as_list=1)
         if len(authorize_user_name) > 0:
             authnet_user_name = authnet_user_name[0][0]

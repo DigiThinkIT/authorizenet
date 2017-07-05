@@ -160,6 +160,38 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
           $field.addClass('focus');
         });
     });
+
+		$('.authorizenet-form [data-magic-month]').each(function() {
+			var $target = $($(this).attr('data-magic-month'));
+			var $month = $(this);
+
+			$target.change(function() {
+				var year = $target.find(":selected").val();
+				var today = new Date();
+
+				if ( year == today.getFullYear() ) {
+					var this_month = today.getMonth();
+					var selected_month = $month.find(":selected").attr("value");
+
+					$month.find("option").each(function() {
+						var value = parseInt($(this).attr("value"));
+						if ( value < this_month ) {
+							$(this).hide();
+						}
+					});
+
+					if ( selected_month < this_month ) {
+						var select = ("0"+this_month).slice(-2);
+						$month.val(select);
+						$month.change();
+					}
+				} else {
+					$month.find("option").show();
+				}
+			});
+
+			$target.change();
+		})
   },
 
   process_card: function(card_info, billing_info, stored_payment_options, request_name, callback) {
