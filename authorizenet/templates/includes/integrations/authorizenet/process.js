@@ -170,7 +170,7 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
 				var today = new Date();
 
 				if ( year == today.getFullYear() ) {
-					var this_month = today.getMonth();
+					var this_month = today.getMonth() + 1;
 					var selected_month = $month.find(":selected").attr("value");
 
 					$month.find("option").each(function() {
