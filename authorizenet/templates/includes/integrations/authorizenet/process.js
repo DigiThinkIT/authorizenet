@@ -11,15 +11,15 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
   },
 
   init: function(addressForm) {
-		this.addressForm = addressForm;
+    this.addressForm = addressForm;
   },
 
   collect_billing_info: function() {
     var billing_info = {};
     // collect billing field values
 
-		var result = this.addressForm.validate();
-		billing_info = $.extend({}, result.address);
+    var result = this.addressForm.validate();
+    billing_info = $.extend({}, result.address);
 
     return billing_info;
   },
@@ -42,11 +42,11 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
         card_info[this.card_fields[field]] = $field.val();
       }
 
-			// clean up string
-			if ( card_info[this.card_fields[field]] !== undefined && typeof card_info[this.card_fields[field]] == "string" ) {
-				// no empty data allowed
-				card_info[this.card_fields[field]] = card_info[this.card_fields[field]].trim();
-			}
+      // clean up string
+      if ( card_info[this.card_fields[field]] !== undefined && typeof card_info[this.card_fields[field]] == "string" ) {
+        // no empty data allowed
+        card_info[this.card_fields[field]] = card_info[this.card_fields[field]].trim();
+      }
     }
 
     return card_info;
@@ -102,36 +102,36 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
       }
     });
 
-		// initially copy all field values on checkbox change
-		$('#authorizenet_address_same_as').change(function() {
-			var addr_src = $(this).attr('data-source');
-			if ( $(this).is(':checked') ) {
-				$(addr_src).find('[data-type]').each(function() {
-					var name = $(this).attr('data-type');
-					var value = $(this).val();
-					$('.authorizenet-form .field [data-type="'+name+'"]').val(value);
-					$('.authorizenet-form .field [data-type="'+name+'"]').prop('disabled', true);
-					$('.authorizenet-form .field [data-type="'+name+'"]').closest('.field').addClass('disabled');
-				});
-			} else {
-				$('.authorizenet-form .field [data-type]').each(function() {
-					$(this).prop('disabled', false);
-					$(this).closest('.field').removeClass('disabled');
-				});
-			}
-		})
+    // initially copy all field values on checkbox change
+    $('#authorizenet_address_same_as').change(function() {
+      var addr_src = $(this).attr('data-source');
+      if ( $(this).is(':checked') ) {
+        $(addr_src).find('[data-type]').each(function() {
+          var name = $(this).attr('data-type');
+          var value = $(this).val();
+          $('.authorizenet-form .field [data-type="'+name+'"]').val(value);
+          $('.authorizenet-form .field [data-type="'+name+'"]').prop('disabled', true);
+          $('.authorizenet-form .field [data-type="'+name+'"]').closest('.field').addClass('disabled');
+        });
+      } else {
+        $('.authorizenet-form .field [data-type]').each(function() {
+          $(this).prop('disabled', false);
+          $(this).closest('.field').removeClass('disabled');
+        });
+      }
+    })
 
-		// then track all changes on source fields
-		if ( $('#authorizenet_address_same_as').length > 0 ) {
-			var addr_src = $('#authorizenet_address_same_as').attr('data-source');
-			$(addr_src).on('field-change', function(e, field) {
-				if ( $('#authorizenet_address_same_as').is(':checked') ) {
-					$('.authorizenet-form .field [data-type="'+field.name+'"]').val(field.value);
-					$('.authorizenet-form .field [data-type="'+field.name+'"]').prop('disabled', true);
-					$('.authorizenet-form .field [data-type="'+field.name+'"]').closest('.field').addClass('disabled');
-				}
-			});
-		}
+    // then track all changes on source fields
+    if ( $('#authorizenet_address_same_as').length > 0 ) {
+      var addr_src = $('#authorizenet_address_same_as').attr('data-source');
+      $(addr_src).on('field-change', function(e, field) {
+        if ( $('#authorizenet_address_same_as').is(':checked') ) {
+          $('.authorizenet-form .field [data-type="'+field.name+'"]').val(field.value);
+          $('.authorizenet-form .field [data-type="'+field.name+'"]').prop('disabled', true);
+          $('.authorizenet-form .field [data-type="'+field.name+'"]').closest('.field').addClass('disabled');
+        }
+      });
+    }
 
     // handle smart placeholder labels
     $('.authorizenet-form .field').each(function() {
@@ -161,37 +161,37 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
         });
     });
 
-		$('.authorizenet-form [data-magic-month]').each(function() {
-			var $target = $($(this).attr('data-magic-month'));
-			var $month = $(this);
+    $('.authorizenet-form [data-magic-month]').each(function() {
+      var $target = $($(this).attr('data-magic-month'));
+      var $month = $(this);
 
-			$target.change(function() {
-				var year = $target.find(":selected").val();
-				var today = new Date();
+      $target.change(function() {
+        var year = $target.find(":selected").val();
+        var today = new Date();
 
-				if ( year == today.getFullYear() ) {
-					var this_month = today.getMonth() + 1;
-					var selected_month = $month.find(":selected").attr("value");
+        if ( year == today.getFullYear() ) {
+          var this_month = today.getMonth() + 1;
+          var selected_month = $month.find(":selected").attr("value");
 
-					$month.find("option").each(function() {
-						var value = parseInt($(this).attr("value"));
-						if ( value < this_month ) {
-							$(this).hide();
-						}
-					});
+          $month.find("option").each(function() {
+            var value = parseInt($(this).attr("value"));
+            if ( value < this_month ) {
+              $(this).hide();
+            }
+          });
 
-					if ( selected_month < this_month ) {
-						var select = ("0"+this_month).slice(-2);
-						$month.val(select);
-						$month.change();
-					}
-				} else {
-					$month.find("option").show();
-				}
-			});
+          if ( selected_month < this_month ) {
+            var select = ("0"+this_month).slice(-2);
+            $month.val(select);
+            $month.change();
+          }
+        } else {
+          $month.find("option").show();
+        }
+      });
 
-			$target.change();
-		})
+      $target.change();
+    })
   },
 
   process_card: function(card_info, billing_info, stored_payment_options, request_name, callback) {
@@ -210,18 +210,60 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
       args: {
         options: data,
         request_name: request_name
-      },
-      callback: function(result) {
-        if ( result.message.status == "Completed" ) {
-          callback(null, result.message);
-        } else {
-          callback(result.message, null);
-        }
-      },
-      error: function(err) {
-        callback(err, null);
       }
-    });
+		})
+		.done(function(data, textStatus, xhr) {
+      if(typeof data === "string") data = JSON.parse(data);
+      var status = xhr.statusCode().status;
+
+			var result = data;
+			if ( result.message.status == "Completed" ) {
+        callback(null, result.message);
+      } else {
+        var errors = [];
+        if ( result.message.error.constructor != Array ) {
+          errors.push(result.messages.error);
+        } else {
+          errors = result.messages.error;
+        }
+
+        callback({
+					errors: errors,
+	        status: status,
+					recoverable: result.recoverable || false,
+	        xhr: xhr,
+	        textStatus: textStatus
+        }, null);
+      }
+		})
+		.fail(function(xhr, textStatus) {
+      if(typeof data === "string") data = JSON.parse(data);
+      var status = xhr.statusCode().status;
+			var errors = [];
+			if (xhr.responseJSON && xhr.responseJSON._server_messages) {
+        var _server_messages = JSON.parse(xhr.responseJSON._server_messages);
+      }
+
+      var errors = [];
+      if ( _server_messages ) {
+        try {
+          for(var i = 0; i < _server_messages.length; i++) {
+            errors.push("Server Error: " + JSON.parse(_server_messages[i]).message);
+          }
+        } catch(ex) {
+          errors.push(_server_messages);
+          errors.push(ex);
+        }
+      }
+
+      callback({
+        errors: errors,
+        status: status,
+        recoverable: 0,
+        xhr: xhr,
+        textStatus: textStatus
+      }, null);
+		});
 
   },
 
