@@ -26,7 +26,15 @@ def get_contact(contact_name = None):
 	if isinstance(user, unicode):
 		user = frappe.get_doc("User", user)
 
-	contact = frappe.get_doc("Contact", contact_name or user.name)
+	if not contact_name:
+		contact_names = frappe.get_all("Contact", fields=["name"], filters={
+			"user": user.name
+		})
+
+		if contact_names and len(contact_names):
+			contact_name = contact_names[0].get("name")
+
+	contact = frappe.get_doc("Contact", contact_name or user.email_id)
 
 	return contact
 
