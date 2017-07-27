@@ -234,13 +234,19 @@ class AuthorizeNetSettings(IntegrationService):
 			else:
 				shipping = None
 
+
+			email = contact.get("email_id")
+			if not ("@" in email):
+				email = frappe.get_value("User", contact.user, "email_id")
+
+
 			# build transaction data
 			transaction_data = {
 				"order": {
 					"invoice_number": data["order_id"]
 				},
 				"amount": flt(self.process_data.get("amount")),
-				"email": contact.get("email_id"),
+				"email": email,
 				"description": "%s, %s" % (contact.get("last_name"), contact.get("first_name")),
 				"customer_type": "individual"
 			}
@@ -328,6 +334,18 @@ class AuthorizeNetSettings(IntegrationService):
 			# log validation errors
 			request.log_action(frappe.get_traceback(), "Error")
 			request.status = "Error"
+			error_msg = ""
+			errors = []
+
+			if iex.children and len(iex.children) > 0:
+				for field_error in iex.children:
+					print(field_error.asdict())
+					for field_name, error in field_error.asdict().iteritems():
+						errors.append(error)
+
+			error_msg = "\n".join(errors)
+
+			request.error_msg = error_msg
 			pass
 
 		except AuthorizeResponseError as ex:
@@ -336,6 +354,7 @@ class AuthorizeNetSettings(IntegrationService):
 			request.log_action(json.dumps(result), "Debug")
 			request.log_action(str(ex), "Error")
 			request.status = "Error"
+			requrest.error_msg = ex.text
 
 			redirect_message = str(ex)
 			if result and hasattr(result, 'transaction_response'):
@@ -353,6 +372,7 @@ class AuthorizeNetSettings(IntegrationService):
 			# any other errors
 			request.log_action(frappe.get_traceback(), "Error")
 			request.status = "Error"
+			request.error_msg = "[UNEXPECTED ERROR]: " + ex
 			pass
 
 
@@ -528,7 +548,10 @@ class AuthorizeNetSettings(IntegrationService):
 			success = True
 		else:
 			redirect_url = "/integrations/payment-failed"
-			redirect_message = "Declined"
+			if request.error_msg:
+				redirect_message = "Declined due to:\n" + request.error_msg
+			else:
+				redirect_message = "Declined"
 			success = False
 
 		params = []
