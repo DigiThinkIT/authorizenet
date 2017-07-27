@@ -222,9 +222,9 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
       } else {
         var errors = [];
         if ( result.message.error.constructor != Array ) {
-          errors.push(result.messages.error);
+          errors.push(result.message.error);
         } else {
-          errors = result.messages.error;
+          errors = result.message.error;
         }
 
         callback({
@@ -240,21 +240,38 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
       if(typeof data === "string") data = JSON.parse(data);
       var status = xhr.statusCode().status;
 			var errors = [];
+			var _server_messages = null;
 			if (xhr.responseJSON && xhr.responseJSON._server_messages) {
-        var _server_messages = JSON.parse(xhr.responseJSON._server_messages);
+				try {
+        	_server_messages = JSON.parse(xhr.responseJSON._server_messages);
+				} catch(ex) {
+					errors.push(ex)
+					_server_messages = [xhr.responseJSON._server_messages];
+				}
       }
 
       var errors = [];
-      if ( _server_messages ) {
+      if ( _server_messages && _server_messages.constructor == Array ) {
         try {
           for(var i = 0; i < _server_messages.length; i++) {
-            errors.push("Server Error: " + JSON.parse(_server_messages[i]).message);
+						var msg;
+						try {
+							msg = JSON.parse(_server_messages[i]);
+							if ( msg.message ) {
+								msg = msg.message;
+							}
+						} catch(ex) {
+							msg = ex
+						}
+            errors.push("Server Error: " + msg);
           }
         } catch(ex) {
           errors.push(_server_messages);
           errors.push(ex);
         }
-      }
+      }else if ( _server_messages && _server_messages.exc ) {
+				errors.push(_server_messages.exc);
+			}
 
       callback({
         errors: errors,
