@@ -23,6 +23,7 @@ CARDS = {
 
 def get_contact(contact_name = None):
 	user = session.user
+	contact = None
 	if isinstance(user, unicode):
 		user = frappe.get_doc("User", user)
 
@@ -31,10 +32,16 @@ def get_contact(contact_name = None):
 			"user": user.name
 		})
 
-		if contact_names and len(contact_names):
+		if not contact_names or len(contact_names) == 0:
+			contact_names = frappe.get_all("Contact", fields=["name"], filters={
+				"email_id": user.email
+			})
+
+		if contact_names and len(contact_names) > 0:
 			contact_name = contact_names[0].get("name")
 
-	contact = frappe.get_doc("Contact", contact_name or user.email_id)
+	if contact_name:
+		contact = frappe.get_doc("Contact", contact_name)
 
 	return contact
 
@@ -42,14 +49,15 @@ def get_authorizenet_user():
 
 	try:
 		contact = get_contact();
-		authnet_user_name = frappe.get_list("AuthorizeNet Users", fields=["name"], filters={"contact": contact.name}, as_list=1)
-		if len(authorize_user_name) > 0:
-			authnet_user_name = authnet_user_name[0][0]
+		if contact:
+			authnet_user_name = frappe.get_list("AuthorizeNet Users", fields=["name"], filters={"contact": contact.name}, as_list=1)
+			if len(authorize_user_name) > 0:
+				authnet_user_name = authnet_user_name[0][0]
 
-			#authnet_user_name = frappe.get_value("AuthorizeNet Users",
-			#    filters={"contact": contact.name},
-			#    fieldname="name")
-			authnet_user = frappe.get_doc("AuthorizeNet Users", authnet_user_name)
+				#authnet_user_name = frappe.get_value("AuthorizeNet Users",
+				#    filters={"contact": contact.name},
+				#    fieldname="name")
+				authnet_user = frappe.get_doc("AuthorizeNet Users", authnet_user_name)
 	except:
 		authnet_user = None
 
