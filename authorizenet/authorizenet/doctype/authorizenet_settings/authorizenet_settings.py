@@ -354,7 +354,7 @@ class AuthorizeNetSettings(IntegrationService):
 			request.log_action(json.dumps(result), "Debug")
 			request.log_action(str(ex), "Error")
 			request.status = "Error"
-			requrest.error_msg = ex.text
+			request.error_msg = ex.text
 
 			redirect_message = str(ex)
 			if result and hasattr(result, 'transaction_response'):
