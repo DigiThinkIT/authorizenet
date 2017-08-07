@@ -47,6 +47,7 @@ def get_contact(contact_name = None):
 
 def get_authorizenet_user():
 
+	authnet_user = None
 	try:
 		contact = get_contact();
 		if contact:
