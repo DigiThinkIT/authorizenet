@@ -234,11 +234,19 @@ class AuthorizeNetSettings(IntegrationService):
 			else:
 				shipping = None
 
+			# attempt to find valid email address
+			email = self.process_data.get("payer_email")
+			if "@" not in email:
+				email = contact.get("email_id")
 
-			email = contact.get("email_id")
-			if not ("@" in email):
-				email = frappe.get_value("User", contact.user, "email_id")
+			if "@" not in email:
+				if contac.user:
+					email = frappe.get_value("User", contact.user, "email_id")
 
+			if "@" not in email:
+				log("AUTHNET FAILUE! bad email: {0}".format(email))
+				log(pretty_json(self.process_data))
+				raise ValueError("There are no valid emails associated with this customer")
 
 			# build transaction data
 			transaction_data = {
@@ -372,7 +380,7 @@ class AuthorizeNetSettings(IntegrationService):
 			# any other errors
 			request.log_action(frappe.get_traceback(), "Error")
 			request.status = "Error"
-			request.error_msg = "[UNEXPECTED ERROR]: " + ex
+			request.error_msg = "[UNEXPECTED ERROR]: {0}".format(ex)
 			pass
 
 
