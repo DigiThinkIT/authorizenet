@@ -239,14 +239,14 @@ class AuthorizeNetSettings(IntegrationService):
 			if "@" not in email:
 				email = contact.get("email_id")
 
-			if "@" not in email:
-				if contac.user:
-					email = frappe.get_value("User", contact.user, "email_id")
+				if "@" not in email:
+					if contact.user:
+						email = frappe.get_value("User", contact.user, "email_id")
 
-			if "@" not in email:
-				log("AUTHNET FAILUE! bad email: {0}".format(email))
-				log(pretty_json(self.process_data))
-				raise ValueError("There are no valid emails associated with this customer")
+						if "@" not in email:
+							log("AUTHNET FAILURE! Bad email: {0}".format(email))
+							log(pretty_json(self.process_data))
+							raise ValueError("There are no valid emails associated with this customer")
 
 			# build transaction data
 			transaction_data = {
