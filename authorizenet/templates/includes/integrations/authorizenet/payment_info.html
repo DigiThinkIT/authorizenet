@@ -46,7 +46,7 @@
       <div class="field required">
         <label for="authorizenet_exp_year">Exp Year</label>
         <select id="authorizenet_exp_year" name="authorizenet_exp_year">
-          {% for y in range(year, year + 5) %}
+          {% for y in range(year, year + 20) %}
           <option value="{{y}}">{{y}}</option>
           {% endfor %}
         </select>
@@ -54,6 +54,16 @@
       </div>
     </div>
   </div>
+	{% if is_backend %}
+	<div class="row no-gutter">
+		<div class="col-xs-12 nopad-left">
+      <div class="field required">
+        <label for="authorizenet_zipcode">Postal Code</label>
+        <input id="authorizenet_zipcode" name="pincode" placeholder="Postal Code" data-type="pincode" maxlength="35"/>
+      </div>
+    </div>
+	</div>
+	{% endif %}
 	<!--
   <div class="row no-gutter">
     <div class="col-sm-12">
