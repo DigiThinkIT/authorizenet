@@ -54,6 +54,16 @@
       </div>
     </div>
   </div>
+	{% if is_backend %}
+	<div class="row no-gutter">
+		<div class="col-xs-12 nopad-left">
+      <div class="field required">
+        <label for="authorizenet_zipcode">Postal Code</label>
+        <input id="authorizenet_zipcode" name="pincode" placeholder="Postal Code" data-type="pincode" maxlength="35"/>
+      </div>
+    </div>
+	</div>
+	{% endif %}
 	<!--
   <div class="row no-gutter">
     <div class="col-sm-12">

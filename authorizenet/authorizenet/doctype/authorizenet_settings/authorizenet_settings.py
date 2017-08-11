@@ -168,6 +168,7 @@ class AuthorizeNetSettings(IntegrationService):
 		authnet_user = get_authorizenet_user()
 		# the cc data available
 		data = self.process_data
+
 		# get auth keys
 		settings = self.get_settings()
 		# fetch redirect info
@@ -236,11 +237,11 @@ class AuthorizeNetSettings(IntegrationService):
 
 			# attempt to find valid email address
 			email = self.process_data.get("payer_email")
-			if "@" not in email:
+			if "@" not in email and contact:
 				email = contact.get("email_id")
 
 			if "@" not in email:
-				if contac.user:
+				if contact and contac.user:
 					email = frappe.get_value("User", contact.user, "email_id")
 
 			if "@" not in email:
@@ -255,7 +256,7 @@ class AuthorizeNetSettings(IntegrationService):
 				},
 				"amount": flt(self.process_data.get("amount")),
 				"email": email,
-				"description": "%s, %s" % (contact.get("last_name"), contact.get("first_name")),
+				"description": self.card_info.get("name_on_card"),
 				"customer_type": "individual"
 			}
 
@@ -327,8 +328,6 @@ class AuthorizeNetSettings(IntegrationService):
 			request.log_action("Requesting Transaction: %s" % \
 				json.dumps(transaction_data), "Debug")
 
-
-			log(pretty_json(transaction_data))
 			# performt transaction finally
 			result = authorize.Transaction.sale(transaction_data)
 			request.log_action(json.dumps(result), "Debug")
@@ -387,7 +386,8 @@ class AuthorizeNetSettings(IntegrationService):
 		# now check if we should store payment information on success
 		if request.status in ("Captured", "Authorized") and \
 			self.card_info and \
-			self.card_info.get("store_payment"):
+			self.card_info.get("store_payment") and \
+			contact:
 
 			try:
 
