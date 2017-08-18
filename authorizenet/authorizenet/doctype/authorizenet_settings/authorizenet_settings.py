@@ -237,6 +237,10 @@ class AuthorizeNetSettings(IntegrationService):
 
 			# attempt to find valid email address
 			email = self.process_data.get("payer_email")
+			
+			if email:
+				email = email.split(',')[0]
+
 			if "@" not in email and contact:
 				email = contact.get("email_id")
 
