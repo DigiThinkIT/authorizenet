@@ -55,7 +55,7 @@ import frappe
 from frappe import _, _dict
 from frappe.utils import get_url, call_hook_method, cint, flt
 from frappe.model.document import Document
-from frappe.integrations.utils import create_request_log, make_post_request, create_payment_gateway
+from frappe.integrations.utils import create_request_log, create_payment_gateway
 import json
 from urllib import urlencode
 from datetime import datetime
@@ -76,7 +76,7 @@ class AuthorizeNetSettings(Document):
 
 	def validate(self):
 		create_payment_gateway("AuthorizeNet")
-		call_hook_method("payment_gateway_enabled", gateway=self.service_name)		
+		call_hook_method("payment_gateway_enabled", gateway=self.service_name)
 		if not self.flags.ignore_mandatory:
 			self.validate_authorizenet_credentails()
 

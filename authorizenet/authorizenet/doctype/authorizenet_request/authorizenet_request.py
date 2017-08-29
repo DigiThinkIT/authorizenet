@@ -25,5 +25,5 @@ class AuthorizeNetRequest(Document):
 				"doctype": "AuthorizeNet Request Log",
 				"log": data,
 				"level": level,
-				"timestamp": datetime.now().strftime("%Y-%d-%m %H:%M:%S")
+				"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 			})
