@@ -53,16 +53,14 @@ More Details:
 from __future__ import unicode_literals
 import frappe
 from frappe import _, _dict
-from frappe.utils import get_url, call_hook_method, cint, flt
+from frappe.utils import get_url, call_hook_method, flt
 from frappe.model.document import Document
 from frappe.integrations.utils import create_request_log, create_payment_gateway
 import json
-from urllib import urlencode
 from datetime import datetime
 import urllib
 import authorize
 
-from authorize import Transaction
 from authorize import AuthorizeResponseError, AuthorizeInvalidError
 from authorizenet.utils import get_authorizenet_user, get_card_accronym, authnet_address, get_contact
 
@@ -350,7 +348,6 @@ class AuthorizeNetSettings(Document):
 			error_msg = "\n".join(errors)
 
 			request.error_msg = error_msg
-			pass
 
 		except AuthorizeResponseError as ex:
 			# log authorizenet server response errors
