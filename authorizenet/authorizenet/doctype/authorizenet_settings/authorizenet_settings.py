@@ -53,38 +53,33 @@ More Details:
 from __future__ import unicode_literals
 import frappe
 from frappe import _, _dict
-from frappe.utils import get_url, call_hook_method, cint, flt
-from frappe.integration_broker.doctype.integration_service.integration_service import IntegrationService
-
+from frappe.utils import get_url, call_hook_method, flt
+from frappe.model.document import Document
+from frappe.integrations.utils import create_request_log, create_payment_gateway
 import json
-from urllib import urlencode
 from datetime import datetime
 import urllib
 import authorize
 
-from authorize import Transaction
 from authorize import AuthorizeResponseError, AuthorizeInvalidError
 from authorizenet.utils import get_authorizenet_user, get_card_accronym, authnet_address, get_contact
 
 from dti_devtools.debug import log, pretty_json
 
 
-class AuthorizeNetSettings(IntegrationService):
+class AuthorizeNetSettings(Document):
 	service_name = "AuthorizeNet"
 	supported_currencies = ["USD"]
 	is_embedable = True
 
 	def validate(self):
+		create_payment_gateway("AuthorizeNet")
+		call_hook_method("payment_gateway_enabled", gateway=self.service_name)
 		if not self.flags.ignore_mandatory:
 			self.validate_authorizenet_credentails()
 
 	def on_update(self):
 		pass
-
-	def enable(self):
-		call_hook_method("payment_gateway_enabled", gateway=self.service_name)
-		if not self.flags.ignore_mandatory:
-			self.validate_authorizenet_credentails()
 
 	def get_embed_context(self, context):
 		# list countries for billing address form
@@ -357,7 +352,6 @@ class AuthorizeNetSettings(IntegrationService):
 			error_msg = "\n".join(errors)
 
 			request.error_msg = error_msg
-			pass
 
 		except AuthorizeResponseError as ex:
 			# log authorizenet server response errors
@@ -519,8 +513,7 @@ class AuthorizeNetSettings(IntegrationService):
 				 len(self.process_data.card_info["card_code"])
 
 		if not self.process_data.get("unittest"):
-			self.integration_request = super(AuthorizeNetSettings, self)\
-				.create_request(self.process_data, "Host", self.service_name)
+			self.integration_request = create_request_log(self.process_data, "Host", self.service_name)
 
 		if request.get('status') == "Captured":
 			status = "Completed"
