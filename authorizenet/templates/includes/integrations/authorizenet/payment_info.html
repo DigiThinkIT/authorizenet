@@ -8,52 +8,33 @@
     </div>
   </div>
   <div class="row no-gutter">
-    <div class="col-sm-9">
+    <div class="col-sm-12">
       <div class="field required">
         <label for="authorizenet_number">Card Number</label>
         <input id="authorizenet_number" name="authorizenet_number" placeholder="Card Number"/>
       </div>
     </div>
-    <div class="col-sm-3">
+  </div>
+	<div class="row no-gutter">
+		<div class="col-sm-4">
+			<div class="field required">
+        <label for="authorizenet_exp_month">Exp Month</label>
+        <input id="authorizenet_exp_month" name="authorizenet_exp_month" placeholder="MM" data-validation="\d\d" />
+      </div>
+		</div>
+		<div class="col-sm-4">
+			<div class="field required">
+        <label for="authorizenet_exp_year">Exp Year</label>
+        <input id="authorizenet_exp_year" name="authorizenet_exp_year" placeholder="YYYY" data-validation="\d\d\d\d"/>
+      </div>
+		</div>
+		<div class="col-sm-4">
       <div class="field required">
         <label for="authorizenet_code">Card Code</label>
         <input id="authorizenet_code" name="authorizenet_code" placeholder="Card Code"/>
       </div>
     </div>
-  </div>
-  <div class="row no-gutter">
-    <div class="col-xs-6">
-      <div class="field required">
-        <label for="authorizenet_exp_month">Exp Month</label>
-        <select id="authorizenet_exp_month" name="authorizenet_exp_month" data-magic-month="#authorizenet_exp_year">
-          <option value="01">January</option>
-          <option value="02">February</option>
-          <option value="03">March</option>
-          <option value="04">April</option>
-          <option value="05">May</option>
-          <option value="06">June</option>
-          <option value="07">July</option>
-          <option value="08">August</option>
-          <option value="09">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
-        </select>
-        <span class="select-arrow glyphicon glyphicon-triangle-bottom"></span>
-      </div>
-    </div>
-    <div class="col-xs-6">
-      <div class="field required">
-        <label for="authorizenet_exp_year">Exp Year</label>
-        <select id="authorizenet_exp_year" name="authorizenet_exp_year">
-          {% for y in range(year, year + 20) %}
-          <option value="{{y}}">{{y}}</option>
-          {% endfor %}
-        </select>
-        <span class="select-arrow glyphicon glyphicon-triangle-bottom"></span>
-      </div>
-    </div>
-  </div>
+	</div>
 	{% if is_backend %}
 	<div class="row no-gutter">
 		<div class="col-xs-12 nopad-left">
