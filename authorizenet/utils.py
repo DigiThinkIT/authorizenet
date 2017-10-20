@@ -84,22 +84,23 @@ def authnet_address(fields):
 		return address
 
 	if fields.get("first_name"):
-		address["first_name"] = fields.get("first_name")
+		address["first_name"] = fields.get("first_name")[:50]
 	if fields.get("last_name"):
-		address["last_name"] = fields.get("last_name")
+		address["last_name"] = fields.get("last_name")[:50]
 	if fields.get("company"):
-		address["company"] = fields.get("company")
+		address["company"] = fields.get("company")[:50]
 	if fields.get("address_1"):
 		address["address"] = "%s %s" % (fields.get("address_1"), fields.get("address_2", ""))
+		address["address"] = address["address"][:60]
 	if fields.get("city"):
-		address["city"] = fields.get("city")
+		address["city"] = fields.get("city", "")[:40]
 	if fields.get("state"):
-		address["state"] = fields.get("state")
+		address["state"] = fields.get("state", "")[:40]
 	if fields.get("pincode"):
-		address["zip"] = fields.get("pincode")
+		address["zip"] = fields.get("pincode")[:20]
 	if fields.get("country"):
-		address["country"] = fields.get("country")
+		address["country"] = fields.get("country", "")[:60]
 	if fields.get("phone_number"):
-		address["phone_number"] = fields.get("phone_number")
+		address["phone_number"] = fields.get("phone_number")[:25]
 
 	return address
