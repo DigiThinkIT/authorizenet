@@ -175,6 +175,30 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
 				});
 		});
 
+		var limit_digit_input = function(length) {
+			var value = $(this).val();
+			var clean = value.replace(/[^\d]/, "");
+			if ( clean.length > length ) {
+				clean = clean.substring(0, length);
+			}
+
+			if ( value != clean ) {
+				$(this).val(clean);
+			}
+		};
+
+		$('#authorizenet_exp_month').on("change keyup", function() {
+			limit_digit_input.bind(this)(2);
+		});
+
+		$('#authorizenet_exp_year').on("change keyup", function() {
+			limit_digit_input.bind(this)(4);
+		});
+
+		$('#authorizenet_code').on("change keyup", function() {
+			limit_digit_input.bind(this)(4);
+		})
+
 		$('.authorizenet-form [data-magic-month]').each(function() {
 			var $target = $($(this).attr('data-magic-month'));
 			var $month = $(this);
