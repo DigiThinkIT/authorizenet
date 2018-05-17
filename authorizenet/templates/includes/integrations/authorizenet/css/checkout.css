@@ -10,6 +10,10 @@
 	padding-right: 0;
 }
 
+#authorizenet-sa-form .nopadding {
+	padding: 0 15px;
+}
+
 /* remove spacing between middle columns */
 .authorizenet-form .row.no-inner-gutter [class*='col-']:not(:first-child):not(:last-child) {
   padding-right: 0;

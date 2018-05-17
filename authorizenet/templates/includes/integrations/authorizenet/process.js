@@ -19,11 +19,13 @@ frappe.integration_service.authorizenet_gateway = Class.extend({
 		var billing_info = {};
 		// collect billing field values
 
-		var result = this.addressForm.validate();
-		billing_info = $.extend({}, result.address);
+		if ( this.addressForm ) {
+			var result = this.addressForm.validate();
+			billing_info = $.extend({}, result.address);
 
-		if ( $('#authorizenet_zipcode').length > 0 ) {
-			billing_info["pincode"] = $('#authorizenet_zipcode').val();
+			if ( $('#authorizenet_zipcode').length > 0 ) {
+				billing_info["pincode"] = $('#authorizenet_zipcode').val();
+			}
 		}
 
 		return billing_info;
