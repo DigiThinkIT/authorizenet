@@ -61,11 +61,12 @@ from datetime import datetime
 import urllib
 import authorize
 
+import traceback
 from authorize import AuthorizeResponseError, AuthorizeInvalidError
 from authorizenet.utils import get_authorizenet_user, get_card_accronym, authnet_address, get_contact
 
-from dti_devtools.debug import log, pretty_json
-
+def log(*args, **kwargs):
+	print("\n".join(args))
 
 class AuthorizeNetSettings(Document):
 	service_name = "AuthorizeNet"
@@ -138,13 +139,15 @@ class AuthorizeNetSettings(Document):
 		# TODO: Why must we save doctype first before setting docname?
 		request.reference_docname = kwargs["reference_docname"]
 		request.save()
+		frappe.db.commit()
 
 		return request
 
 	def get_payment_url(self, **kwargs):
 		request = self.build_authorizenet_request(**kwargs)
 		url = "./integrations/authorizenet_checkout/{0}"
-		return get_url(url.format(request.get("name" )))
+		result = get_url(url.format(request.get("name" )))
+		return result
 
 	def get_settings(self):
 		settings = frappe._dict({
@@ -209,12 +212,7 @@ class AuthorizeNetSettings(Document):
 				for f in required_card_fields:
 					if not self.card_info.get(f):
 						request.status = "Error"
-						return {
-							request,
-							None,
-							"Missing field: %s" % f,
-							{}
-						}
+						return request,	None, "Missing field: %s" % f, {}
 
 			# prepare authorize api
 			authorize.Configuration.configure(
@@ -232,7 +230,7 @@ class AuthorizeNetSettings(Document):
 
 			# attempt to find valid email address
 			email = self.process_data.get("payer_email")
-			
+
 			if email:
 				email = email.split(',')[0]
 
@@ -245,7 +243,6 @@ class AuthorizeNetSettings(Document):
 
 						if "@" not in email:
 							log("AUTHNET FAILURE! Bad email: {0}".format(email))
-							log(pretty_json(self.process_data))
 							raise ValueError("There are no valid emails associated with this customer")
 
 			# build transaction data
@@ -374,6 +371,7 @@ class AuthorizeNetSettings(Document):
 			pass
 
 		except Exception as ex:
+			log(frappe.get_traceback())
 			# any other errors
 			request.log_action(frappe.get_traceback(), "Error")
 			request.status = "Error"
@@ -540,7 +538,7 @@ class AuthorizeNetSettings(Document):
 						status)
 					request.log_action("Custom Redirect To: %s" % custom_redirect_to, "Info")
 			except Exception as ex:
-				print(frappe.get_traceback())
+				log(frappe.get_traceback())
 				request.log_action(frappe.get_traceback(), "Error")
 				raise ex
 
@@ -561,6 +559,10 @@ class AuthorizeNetSettings(Document):
 
 		params = []
 		if redirect_to:
+			# Fixes issue where system passes a relative url for orders
+			if redirect_to == "orders":
+				redirect_to = "/orders"
+
 			params.append(urllib.urlencode({"redirect_to": redirect_to}))
 		if redirect_message:
 			params.append(urllib.urlencode({"redirect_message": redirect_message}))
