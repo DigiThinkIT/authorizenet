@@ -61,7 +61,6 @@ from datetime import datetime
 import urllib
 import authorize
 
-import traceback
 from authorize import AuthorizeResponseError, AuthorizeInvalidError
 from authorizenet.utils import get_authorizenet_user, get_card_accronym, authnet_address, get_contact
 
@@ -574,9 +573,9 @@ class AuthorizeNetSettings(Document):
 			request.log_action("Redirect To: %s" % redirect_url, "Info")
 			request.save()
 		else:
-			for log in request.log:
-				print(log.get("level") + "----------------")
-				print(log.get("log"))
+			for l in request.log:
+				print(l.get("level") + "----------------")
+				print(l.get("log"))
 				print("")
 
 		self.process_data = {}
