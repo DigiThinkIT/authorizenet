@@ -24,7 +24,7 @@ CARDS = {
 def get_contact(contact_name = None):
 	user = session.user
 	contact = None
-	if isinstance(user, unicode):
+	if isinstance(user, str):
 		user = frappe.get_doc("User", user)
 
 	if not contact_name:
